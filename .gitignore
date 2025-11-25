@@ -1,0 +1,10 @@
+# Editors
+.vscode/
+.frontmatter/
+frontmatter.json
+
+# Hugo generated content
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+.hugo_build.lock
