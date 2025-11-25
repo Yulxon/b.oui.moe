@@ -1,8 +1,35 @@
 baseURL = 'https://b.oui.moe/'
 languageCode = 'zh-cn'
-title = 'b.oui.moe'
-theme = 'ananke'
+title = 'Ი𐑼'
+theme = 'paper'
 
 [caches]
   [caches.images]
     dir = ':cacheDir/images'
+
+[params]
+  # color style
+  color = 'linen'                           # linen, wheat, gray, light
+
+  # header social icons
+  github = 'Yulxon'
+  rss = true                                # show rss icon
+
+  # home page profile
+  # avatar = 'GRAVATAR_EMAIL'                 # gravatar email or image url
+  name = ''
+  bio = ''
+
+
+  # misc
+  disableHLJS = true                        # disable highlight.js
+  disablePostNavigation = true              # disable post navigation
+  monoDarkIcon = true                       # show monochrome dark mode icon
+  # gravatarCdn = 'GRAVATAR_CDN_LINK'         # e.g. 'https://cdn.v2ex.com/gravatar/'
+  math = true                               # enable KaTeX math typesetting globally
+  localKatex = false                        # use local KaTeX js/css instead of CDN
+  # graphCommentId = "YOUR_GRAPH_COMMENT_ID"  # use graph comment (disqus alternative)
+  # favicon = "favicon.ico"                   # customize the default favicon
+  # appleTouchIcon = "apple-touch-icon.png"   # customize the default Apple touch icon
+
+
