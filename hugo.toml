@@ -1,0 +1,4 @@
+baseURL = 'https://b.oui.moe/'
+languageCode = 'zh-cn'
+title = 'b.oui.moe'
+theme = 'ananke'
