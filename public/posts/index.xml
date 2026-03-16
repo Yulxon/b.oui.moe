@@ -2,17 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Ი𐑼</title>
-    <link>https://b.oui.moe/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Ი𐑼</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 25 Nov 2025 09:02:51 +0800</lastBuildDate>
-    <atom:link href="https://b.oui.moe/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 15 Mar 2026 13:17:15 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>面试准备</title>
+      <link>http://localhost:1313/posts/2026-03-15-250315/</link>
+      <pubDate>Sun, 15 Mar 2026 13:17:15 +0000</pubDate>
+      <guid>http://localhost:1313/posts/2026-03-15-250315/</guid>
+      <description>&lt;h2 id=&#34;关于我&#34;&gt;关于我&lt;/h2&gt;&#xA;&lt;p&gt;我毕业于xxx，对操作系统工程师的岗位适配度比较高，也很认同燧炻创新的理念，希望未来能一起共事。&lt;/p&gt;&#xA;&lt;p&gt;我的优势是抽象思维比较强，高中物理成绩很好，也喜欢研究原理和挑战难题。我对操作系统比较感兴趣也充满好奇，安装了NixOS作为主力，并在使用的过程中对操作系统的组成比较了解。&lt;/p&gt;&#xA;&lt;h2 id=&#34;题目一工作理念和发展路线&#34;&gt;题目一：工作理念和发展路线&lt;/h2&gt;&#xA;&lt;p&gt;工作生活平衡、弹性工作、尊重个性，核心在于对员工个人生活及性格特质的尊重，反教条和驯化，强调自我个性和创造力。除却员工身份之外，更作为一个追求共同理想的人。&lt;/p&gt;&#xA;&lt;p&gt;产品：XpressReal T3、Fydetab Duo、FydeSign&lt;/p&gt;&#xA;&lt;h2 id=&#34;题目二系统开发调试的方法探索&#34;&gt;题目二：系统开发调试的方法探索&lt;/h2&gt;&#xA;&lt;p&gt;fork()创建子进程&lt;/p&gt;&#xA;&lt;p&gt;schedule()调度器&lt;/p&gt;&#xA;&lt;p&gt;strace日志、dmesg、ldd动态链接&lt;/p&gt;&#xA;&lt;p&gt;kill信号量，关机和结束进程&lt;/p&gt;&#xA;&lt;p&gt;驱动注册、kernel mods、udev&lt;/p&gt;&#xA;&lt;h2 id=&#34;题目三fydeos整体架构分析&#34;&gt;题目三：FydeOS整体架构分析&lt;/h2&gt;&#xA;&lt;p&gt;这部分摘自ChatGPT&lt;/p&gt;&#xA;&lt;p&gt;kernel/&lt;br&gt;&#xA;├─ binder/             # Android IPC&lt;br&gt;&#xA;├─ ashmem/             # Android shared memory&lt;br&gt;&#xA;├─ seccomp/            # 系统调用限制&lt;br&gt;&#xA;├─ namespaces/         # PID / mount / network namespace&lt;br&gt;&#xA;├─ dm-verity/          # verified boot hash check&lt;br&gt;&#xA;├─ KVM / virtio/       # Crostini VM 支持&lt;br&gt;&#xA;└─ drivers/            # GPU, WiFi, camera, OEM hardware&lt;/p&gt;&#xA;&lt;p&gt;platform2/&lt;br&gt;&#xA;├─ cryptohome/         # 用户加密 home, TPM 支持&lt;br&gt;&#xA;├─ shill/              # 网络管理, DBus&lt;br&gt;&#xA;├─ update_engine/      # A/B OTA更新&lt;br&gt;&#xA;├─ power_manager/      # 电源管理&lt;br&gt;&#xA;└─ session_manager/    # 登录 session 管理&lt;/p&gt;</description>
+    </item>
     <item>
       <title>My First Post</title>
-      <link>https://b.oui.moe/posts/my-first-post/</link>
+      <link>http://localhost:1313/posts/my-first-post/</link>
       <pubDate>Tue, 25 Nov 2025 09:02:51 +0800</pubDate>
-      <guid>https://b.oui.moe/posts/my-first-post/</guid>
+      <guid>http://localhost:1313/posts/my-first-post/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;This is &lt;strong&gt;bold&lt;/strong&gt; text, and this is &lt;em&gt;emphasized&lt;/em&gt; text.&lt;/p&gt;&#xA;&lt;p&gt;Visit the &lt;a href=&#34;https://gohugo.io&#34;&gt;Hugo&lt;/a&gt; website!&lt;/p&gt;</description>
     </item>
   </channel>
