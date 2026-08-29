@@ -1,0 +1,52 @@
+@import "./styles/transformer.css";
+@import "./styles/glow.css";
+
+@font-face {
+    font-family: 'Wotfard';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Wotfard'), url('/wotfard-regular-webfont.woff2') format('woff2');
+    unicode-range:U+0000-007F;
+}
+
+@layer base {
+	img {
+		@apply rounded-xl;
+	}
+}
+*::selection {
+   @apply bg-[#566253] text-white;
+}
+
+html {
+	@apply scrollbar scrollbar-rounded
+}
+
+body {
+	@apply bg-[#fbfaf6] dark:bg-[#171717];
+}
+
+/* hack for webkit, bar as gutter */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  html {
+    overflow-y: scroll;
+  }
+}
+
+
+.squircle {
+  mask-image: paint(squircle);
+  --squircle-smooth: 0.3;
+  --squircle-radius: 6px;
+}
+
+@layer utilities {
+	.heading {
+		@apply shadow-none text-slate-900 leading-none !important;
+	}
+
+	.heading:hover::after {
+		@apply opacity-80 text-sprout-400;
+		content: " #";
+	}
+}

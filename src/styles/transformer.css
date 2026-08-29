@@ -1,0 +1,36 @@
+/* code { */
+  /* counter-reset: step; */
+  /* counter-increment: step 0; */
+/* } */
+
+code .line::before {
+  /* content: counter(step); */
+  /* counter-increment: step; */
+  margin-left: 3px;
+  margin-right: 1rem;
+  display: inline-block;
+  text-align: right;
+  color: rgba(115,138,148,.4)
+}
+
+.highlighted-word {
+  @apply border-2 border-ouchi-500 rounded-md px-1 py-px
+}
+
+.highlighted {
+  @apply bg-chill-200 rounded-sm py-1 pr-2
+}
+
+.highlighted.error {
+  @apply bg-red-200
+}
+
+.highlighted.warning {
+  @apply bg-yellow-200
+}
+
+.line.focused { @apply blur-sm hover:blur-none transition-all }
+
+.line.diff { @apply px-1 py-1.5  }
+.line.diff.add { @apply bg-sprout-200 before:content-["+"] before:w-0 before:overflow-visible before:text-red-400 before:inline-block before:p-0; }
+.line.diff.remove { @apply bg-red-100 before:content-["-"] before:w-0 before:overflow-visible before:text-sprout-500 before:inline-block before:p-0; }
