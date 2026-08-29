@@ -63,6 +63,19 @@ toc: true
 
 Set `draft: true` to hide it from the index, taxonomy, RSS and sitemap.
 
+## Nix development environment
+
+A [flake](flake.nix) provides a reproducible dev shell (NixOS / nix with flakes):
+
+```bash
+nix develop          # or: direnv allow  (see .envrc)
+pnpm dev             # http://localhost:3000
+```
+
+The shell pins **nodejs 22** (matching the GitHub Actions CI) and **corepack**;
+`pnpm` follows the `packageManager` field in `package.json` (pnpm 9.15.9, same
+as CI). `flake.lock` pins the exact nixpkgs revision.
+
 ## Deployment
 
 GitHub Actions (`pnpm build:all`) prerenders the site into `.output/public` and

@@ -8,12 +8,16 @@
 .solid
 /.content-collections
 /public/og
+/public/rss.xml
+/public/sitemap.xml
 
 # local tooling caches
 /.corepack
 /.npm-cache
 /.local-bin
 /.pnpm-store
+/.nix-cache
+/.bin
 
 # logs & env
 /*.log
