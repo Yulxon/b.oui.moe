@@ -1,0 +1,39 @@
+/*
+ * Human-facing tuning knobs.
+ * Change values here before hunting through selectors.
+ */
+:root {
+  /* Widths */
+  --home-width: 50%;
+  --article-width: 50%;
+  --article-width-tablet: 75%;
+  --taxonomy-width: 1080px;
+  --search-width: 760px;
+  --toc-width: min(180px, calc(25% - 48px));
+
+  /* Typography */
+  --body-size: 16px;
+  --body-line: 1.75;
+  --post-title-size: 15.5px;
+  --article-title-size: 32px;
+  --article-title-mobile-size: 24px;
+  --prose-size: 17px;
+  --prose-mobile-size: 16px;
+  --font: "LXGW WenKai", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  /* Spacing */
+  --header-x: 36px;
+  --article-x: 24px;
+  --page-bottom: 64px;
+
+  /* Shape */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --fast: .2s;
+  --normal: .3s;
+}

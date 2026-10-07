@@ -1,21 +1,32 @@
 # Shared reading-site components
 
-The reference is [blog.nyaw.xyz](https://github.com/oluceps/blog.nyaw.xyz).
-These are independent native implementations of its visible patterns, not copied Solid source or an automatically synchronized upstream package. No new dependencies are required.
+The visual reference is `blog.nyaw.xyz`. Components here are independent native implementations, not copied Solid source or an automatically synchronized upstream package.
 
-| Component | Reference | Local implementation |
-| --- | --- | --- |
-| Header and mobile menu | `src/components/Header.tsx` | `engine/lib/components.mjs` and `engine/assets/components.js` |
-| Chronological article list | `src/components/Arti.tsx` | `engine/lib/components.mjs`, shared by home and taxonomy |
-| Article table of contents | `src/components/Toc.tsx` | `engine/lib/markdown.mjs`, `engine/lib/components.mjs`, and `engine/assets/components.js` |
-| Back to top | `src/components/BackTopBtn.tsx` | `engine/lib/components.mjs` and `engine/assets/components.js` |
+| Component | Local implementation |
+| --- | --- |
+| Header and mobile menu | `engine/lib/components.mjs` + `engine/assets/components.js` |
+| Chronological article list | `engine/lib/components.mjs` |
+| Article table of contents | `engine/lib/markdown.mjs`, `engine/lib/components.mjs`, `engine/assets/components.js` |
+| Back to top | `engine/lib/components.mjs` + `engine/assets/components.js` |
+| Page HTML structure | `engine/templates/*.mjs` |
+| Shared visual rules | `engine/styles/*.css` |
 
-`site.js` initializes the browser components. `build.mjs` assembles pages and copies their assets. All output remains in `public/`; all author text is read directly from editable Markdown in Data.
+`site.js` initializes browser enhancements. `build.mjs` assembles templates, content and styles into `public/`.
 
-The single palette follows the reference: paper `#fbfaf6`, ink `#2a2a28`, muted `#8b8b86`, rules `#ebe9e1`, green accent `#6f9052`. Old theme preferences are ignored. There is no theme picker or theme storage code.
+## Style maintenance
 
-Maintenance: adjust a component in its shared module, update its CSS, run `npm run test`, `npm run build`, and `npm run check`. Review desktop/mobile navigation, article heading links, and taxonomy URL filters after relevant UI changes.
+The visual surface is deliberately human-editable:
 
-Article typography is isolated in `engine/assets/article.css`, loaded only on article routes. Paragraphs remain 17px with 1.625 line-height at every viewport; container sizes control heading/list scale. The shared font stack begins with self-hosted LXGW WenKai, distributed under OFL 1.1. Unicode subsets load only when needed, with system fallback while loading. The font assets, provenance, and license live in `engine/assets/fonts/lxgw-wenkai/`; code retains its monospace stack.
+- `tokens.css` — high-frequency tuning knobs;
+- `palette.css` — paper/ink/green colors;
+- `layout.css` — widths and responsive geometry;
+- `typography.css` — shared type hierarchy;
+- `components.css` — navigation, taxonomy, search, TOC and controls;
+- `article.css` — article-only reading refinements;
+- `custom.css` — protected author overrides loaded last.
 
-Article contents links are rendered during the build, including all heading levels with unique anchors. They work without JavaScript. The Chinese contents panel starts expanded on desktop and mobile; JavaScript enhances active-section tracking and reading progress.
+The current palette remains paper `#fbfaf6`, ink `#2a2a28`, muted `#8b8b86`, rules `#ebe9e1`, and green accent `#6f9052`.
+
+Article contents links are rendered during the build, including all heading levels with unique anchors. JavaScript enhances active-section tracking and reading progress.
+
+The self-hosted LXGW WenKai assets and licenses remain under `engine/assets/fonts/lxgw-wenkai/` and require no runtime font CDN.

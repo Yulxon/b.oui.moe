@@ -1,0 +1,27 @@
+.brand strong { font: 400 13px/1.5 var(--mono); color: var(--muted); }
+.year-label { font-size: 20px; font-weight: 400; letter-spacing: .025em; margin: 0 0 2px; }
+.season-name { font: 12px/1.5 var(--mono); color: var(--muted); }
+.post-date { font: 12.5px/1.5 var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.post-title { font-size: var(--post-title-size); line-height: 1.55; }
+.post-meta { font-size: 12px; color: var(--muted); }
+.eyebrow { font: 10px/1.6 var(--mono); letter-spacing: .15em; color: var(--muted); font-weight: 400; }
+.article-back { color: var(--muted); font: 11px var(--mono); }
+.article-meta { font: 11px/1.6 var(--mono); color: var(--muted); letter-spacing: .1em; }
+.article-header h1 { font-size: var(--article-title-size); font-weight: 500; line-height: 1.25; letter-spacing: -.005em; }
+.prose { font-size: var(--prose-size); line-height: 1.75; overflow-wrap: anywhere; }
+.prose p { margin: 0 0 1.25em; }
+.prose h1 { font-size: 1.65em; margin: 1rem 0; }
+.prose h2 { font-size: 1.55em; }
+.prose h3 { font-size: 1.25em; }
+.prose h2, .prose h3 { font-weight: 500; line-height: 1.4; margin: 1.75em 0 .5em; scroll-margin-top: 30px; }
+.prose blockquote { color: var(--muted); }
+.prose code { font: .88em/1.5 var(--mono); }
+.article-tags { font: 12px var(--mono); color: var(--muted); }
+.site-footer { font: 11px/1.6 var(--mono); color: var(--muted); }
+
+@media (min-width: 1440px) { .prose { font-size: 20px; } }
+@media (max-width: 767px) {
+  .post-meta { font-size: 11px; }
+  .article-header h1 { font-size: var(--article-title-mobile-size); }
+  .prose { font-size: var(--prose-mobile-size); }
+}
