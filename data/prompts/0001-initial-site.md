@@ -1,25 +1,5 @@
-# Initial website brief
+# 网站方向
 
-Create a personal writing site inspired by the calm, minimal reading experience of https://github.com/oluceps/blog.nyaw.xyz without cloning it.
+维护简单的 Markdown 静态博客，整体阅读外观参考 blog.nyaw.xyz。使用统一的纸色背景和绿色强调，保留年/季节列表、分类标签、搜索、文章目录和响应式导航。
 
-Maintain three visual themes: light blue, pink, and white. The palette should feel like a stylized transgender-flag color system rather than literal flag stripes everywhere.
-
-Technology should follow KISS: simple, understandable, and easy to maintain. Deploy with GitHub Pages.
-
-The project has three conceptual layers:
-
-- Data: the author's append-only prompts, rough notes, drafts, and context for AI.
-- Engine: the machine-readable/generated content and the deterministic build machinery.
-- Public: the final static website source that is published.
-
-For v1 implement:
-
-- home page
-- taxonomy/archive + categories + tags
-- search
-- about page
-- article page
-- AGENTS.md for AI contributors
-- README.md for humans
-
-Editorial rule: preserve the author's intent, tone and writing habits. Improve readability conservatively. Small touches may be lively, professional, friendly or cute when the source supports them, but do not overwrite the author's persona with generic AI prose.
+Data 是可编辑的最终内容。Engine 直接解析 Markdown 并确定性构建 Public，不需要 AI 生成最终文章或同步另一份文章 JSON。优先平台 API 和静态生成；只有明确维护收益时才增加依赖。

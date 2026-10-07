@@ -7,7 +7,7 @@
   --accent: #6f9052;
   --accent-soft: #e4ecdb;
   --surface: #fff;
-  --font: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font: "LXGW WenKai", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 * { box-sizing: border-box; }
@@ -112,12 +112,14 @@ a.post-meta:hover { background: var(--accent-soft); }
 .reading-progress span { display: block; width: 0; height: 100%; background: var(--accent); }
 .toc-rail { position: absolute; left: 36px; top: 48px; bottom: 0; width: min(180px, calc(25% - 48px)); }
 .article-toc { position: sticky; top: 30px; font-size: 12px; color: var(--muted); max-height: calc(100vh - 60px); overflow-y: auto; }
-.article-toc summary { cursor: pointer; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .2em; }
+.article-toc summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink); }
 .article-toc nav { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .article-toc a { text-decoration: none; overflow-wrap: anywhere; border-left: 2px solid transparent; padding-left: 8px; font-size: 12.5px; line-height: 1.5; }
 .article-toc a[aria-current] { color: var(--ink); border-color: var(--accent); }
 .article-toc a[data-level="3"] { padding-left: 22px; }
 .article-toc a[data-level="4"] { padding-left: 30px; }
+.article-toc a[data-level="5"] { padding-left: 38px; }
+.article-toc a[data-level="6"] { padding-left: 46px; }
 .reading-status { display: flex; flex-direction: column; gap: 6px; margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--line); font: 11px/1.5 var(--mono); }
 .reading-status > span { font-size: 10px; letter-spacing: .15em; }
 .back-top { position: fixed; bottom: 32px; right: 20px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 6px; background: #ccdabcb3; color: #435833; text-decoration: none; font-size: 24px; line-height: 1; }

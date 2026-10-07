@@ -30,9 +30,10 @@ function inline(source) {
   return text;
 }
 
-export function markdownToHtml(markdown = "") {
+export function markdownToHtml(markdown = "", headings = []) {
   const lines = String(markdown).replaceAll("\r\n", "\n").split("\n");
   const out = [];
+  const ids = new Set(["top", "site-menu"]);
   let paragraph = [];
   let list = null;
   let code = null;
@@ -85,8 +86,13 @@ export function markdownToHtml(markdown = "") {
       closeList();
       const level = heading[1].length;
       const title = heading[2];
-      const id = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "");
-      out.push(`<h${level}${id ? ` id="${escapeHtml(id)}"` : ""}>${inline(title)}</h${level}>`);
+      const stem = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "") || 'section';
+      let id = stem;
+      let suffix = 2;
+      while (ids.has(id)) id = `${stem}-${suffix++}`;
+      ids.add(id);
+      headings.push({ id, level, title: stripMarkdown(title) });
+      out.push(`<h${level} id="${escapeHtml(id)}">${inline(title)}</h${level}>`);
       continue;
     }
 

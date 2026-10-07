@@ -1,111 +1,33 @@
 # AGENTS.md
 
-This repository is designed to be maintained by humans and coding agents together.
+This repository is maintained by humans and coding agents together.
 
-## Mental model
+## Layers
 
-There are exactly three conceptual layers:
+1. `data/` is editable author content and project instructions.
+2. `engine/` is deterministic build code and shared assets.
+3. `public/` is generated output published by GitHub Pages.
 
-1. `data/` — append-only human/author memory.
-2. `engine/` — AI-normalized content plus deterministic build code.
-3. `public/` — generated static site that GitHub Pages publishes.
+Data is no longer append-only. Humans and AI may edit, reorganize, or remove Markdown, `data/prompts/`, and `data/README.md` as the project evolves. Git tracks history. Preserve the author's meaning and voice when editing; do not invent facts or conclusions.
 
-Do not blur these layers because doing so makes future diffs hard to understand.
+## Authoring
 
-## Prime directive for Data
+`data/articles/*.md` is the final article source. YAML frontmatter supplies title, date, categories, tags, description, and publication status. The build reads Markdown directly; there is no AI normalization step or duplicate article JSON. Only `draft: false` publishes an article; an omitted draft field defaults to a draft. Preserve publication status unless a request explicitly changes it.
 
-**Never delete, rewrite, reorder, reformat, rename for cleanliness, or silently fix existing text inside `data/`.**
+`data/about.md` supplies the about page; `data/site.json` supplies site settings. Prompts guide optional collaboration and are not published. AI may update Markdown and instructions when requested work requires it.
 
-Data is an append-only ledger. If the author corrects an earlier statement, append an update at the end of that file. The newest explicit instruction governs the generated result, but older source text stays intact.
+## Implementation
 
-Before doing content work:
+Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; fonts are self-hosted assets with their license.
 
-```sh
-git diff -- data/
-```
+Never hand-maintain `public/`. Port temporary debugging changes into Engine or Data and rebuild.
 
-Identify the newly appended ranges. Read enough earlier context to understand them, then make the smallest necessary update to `engine/generated/`.
+## Validation
 
-Use `npm run check:data` before committing local Data edits.
+After relevant changes run `npm run test`, `npm run check:data`, `npm run build`, and `npm run check`. Inspect the diff for unrelated changes and unintended prose edits. Verify desktop and mobile when changing layout or typography.
 
-## Editorial behavior
+## Design and features
 
-When turning Data into generated article content:
+Follow the quiet reading appearance of `blog.nyaw.xyz`: generous whitespace, chronological year/season groups, unobtrusive metadata, green accents on a paper background, and article-first pages. There is one style; the previous blue/pink/white theme switcher was removed at the user's request.
 
-- preserve the author's meaning, tone, sentence rhythm, recurring wording, uncertainty and jokes;
-- improve readability conservatively;
-- paragraph breaks, headings, punctuation and small connective phrases are fine;
-- lively / professional / friendly / cute touches are allowed only when they fit the source;
-- do not flatten everything into generic polished AI prose;
-- do not invent facts, motivations, theory, memories, citations, confidence or emotional conclusions;
-- if metadata is uncertain, omit it rather than guessing;
-- a later append-only update overrides earlier instructions in Engine/Public.
-
-`source` in each generated article should point back to the relevant `data/` file.
-
-## Engine rules
-
-`engine/generated/` is the reviewed semantic representation produced from Data. It is allowed to change normally.
-
-`engine/build.mjs` and `engine/lib/` are deterministic implementation code. Keep them boring and readable.
-
-KISS rules:
-
-- prefer browser/platform APIs;
-- prefer static generation;
-- no server runtime;
-- no database;
-- no frontend framework unless a concrete requirement cannot be met simply;
-- every new dependency needs a clear maintenance benefit that outweighs a small local implementation;
-- avoid build-system magic and hidden conventions.
-
-## Public rules
-
-`public/` is generated output. Do not hand-maintain it as a second source of truth.
-
-If you temporarily patch `public/` while debugging, port the fix back into Engine and rebuild before finishing.
-
-## Required workflow
-
-After any relevant change:
-
-```sh
-npm run build
-npm run check
-```
-
-For a Data-driven task, the expected diff usually looks like:
-
-- appended lines in `data/...` (human-owned input),
-- a small change in `engine/generated/...` (AI-normalized content),
-- regenerated `public/...` output.
-
-Before finishing, inspect the diff for accidental prose rewrites or unrelated formatting churn.
-
-## Visual direction
-
-The design closely follows the quiet, chronological reading feel and visual style of `blog.nyaw.xyz`. Shared native components follow its visible behavior while keeping this static architecture.
-
-Keep:
-
-- generous whitespace;
-- strong typography;
-- chronological year/season grouping;
-- unobtrusive metadata;
-- simple taxonomy and tags;
-- article-first reading pages.
-
-Use the single reference palette: paper `#fbfaf6`, ink `#2a2a28`, muted `#8b8b86`, rules `#ebe9e1`, and green accent `#6f9052`. The author explicitly removed the blue/pink/white themes; do not restore a theme switcher.
-
-## v1 feature contract
-
-Do not regress these without an explicit request:
-
-- home page;
-- archive/category/tag taxonomy;
-- local static search;
-- about page;
-- article pages;
-- single paper-and-green visual style;
-- GitHub Pages deployment workflow;
-- responsive layout.
+Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, and GitHub Pages deployment.

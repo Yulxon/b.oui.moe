@@ -1,11 +1,7 @@
-# Editorial policy
+# 协作编辑原则
 
-The author's words are primary evidence.
+作者和 AI 可以直接修改 Markdown、提示文件和说明，Git 保存历史。AI 是可选的协作者，不是发布流水线的必要步骤。
 
-1. Preserve meaning before polishing style.
-2. Keep characteristic pauses, uncertainty, humor, abruptness, and unusual wording when they are intentional.
-3. Do not manufacture confidence, motivations, memories, facts, theory, citations, or emotional conclusions.
-4. Prefer light structural edits: paragraph breaks, headings, punctuation, short connective phrases.
-5. If a draft is fragmentary, let it remain fragmentary when that is part of its texture.
-6. Metadata may be inferred conservatively; uncertain tags should be omitted rather than invented.
-7. When a later append-only update conflicts with an earlier instruction, the later update wins in Engine/Public, but the earlier Data remains untouched.
+编辑时保留作者的意思、语气、节奏、常用措辞、不确定性和玩笑。可调整段落、标题、标点和代码块，使文章便于阅读；不要擅自增加事实、经历、引文或情绪结论。用户的新指示优先。
+
+文章正文以 data/articles/*.md 为准，修改后直接构建。除非用户要求，不改变 draft 状态。检查元信息、构建结果和相关页面。

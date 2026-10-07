@@ -1,14 +1,14 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadArticles } from "./lib/content.mjs";
 import { markdownToHtml, stripMarkdown } from "./lib/markdown.mjs";
 import { escapeHtml, siteHeader, chronologicalContent, articleTools, backToTop } from "./lib/components.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const publicDir = path.join(root, "public");
-const generatedDir = path.join(here, "generated");
-const articleDir = path.join(generatedDir, "articles");
+const dataDir = path.join(root, "data");
 const cacheDir = path.join(here, "cache");
 const base = normalizeBase(process.env.SITE_BASE || "");
 
@@ -18,14 +18,9 @@ function normalizeBase(value) {
 }
 const href = (pathname) => `${base}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 
-const site = JSON.parse(await fs.readFile(path.join(generatedDir, "site.json"), "utf8"));
-const articleFiles = (await fs.readdir(articleDir)).filter(name => name.endsWith(".json"));
-const articles = [];
-for (const file of articleFiles) {
-  const post = JSON.parse(await fs.readFile(path.join(articleDir, file), "utf8"));
-  if (post.status === "published") articles.push(post);
-}
-articles.sort((a, b) => b.date.localeCompare(a.date));
+const site = JSON.parse(await fs.readFile(path.join(dataDir, "site.json"), "utf8"));
+const aboutMarkdown = await fs.readFile(path.join(dataDir, "about.md"), "utf8");
+const articles = (await loadArticles(dataDir)).filter(post => post.status === "published");
 
 const taxonomyHref = (kind, value) => href(`/taxonomy/?view=${kind}&${kind}=${encodeURIComponent(value)}`);
 
@@ -38,6 +33,7 @@ function page({title, description = site.description, current = "", content, scr
   <meta name="color-scheme" content="light">
   <meta name="description" content="${escapeHtml(description)}">
   <title>${escapeHtml(title)}${title === site.title ? "" : ` · ${escapeHtml(site.title)}`}</title>
+  <link rel="stylesheet" href="${href("/assets/fonts/lxgw-wenkai/font.css")}">
   <link rel="stylesheet" href="${href("/assets/site.css")}">
   ${styles.map(src => `<link rel="stylesheet" href="${href(src)}">`).join("\n")}
 </head>
@@ -83,8 +79,10 @@ function searchContent() {
 }
 
 function articleContent(post) {
+  const headings = [];
+  const body = markdownToHtml(post.bodyMarkdown || "", headings);
   const tags = (post.tags || []).map(tag => `<a href="${taxonomyHref("tag", tag)}">#${escapeHtml(tag)}</a>`).join(" ");
-  return `<div class="reading-progress" aria-hidden="true"><span></span></div><div class="article-layout">${articleTools()}<div class="article-shell"><a class="article-back" href="${href("/")}">← 返回</a><article><header class="article-header"><div class="article-meta"><a href="${taxonomyHref("category", post.category || "未分类")}">${escapeHtml(post.category || "未分类")}</a><span>·</span><time datetime="${escapeHtml(post.date)}">${escapeHtml(post.date.replaceAll("-", "."))}</time></div><h1>${escapeHtml(post.title)}</h1></header><div class="prose">${markdownToHtml(post.bodyMarkdown || "")}</div><div class="article-tags">${tags}</div></article></div></div>${backToTop()}`;
+  return `<div class="reading-progress" aria-hidden="true"><span></span></div><div class="article-layout">${articleTools(headings)}<div class="article-shell"><a class="article-back" href="${href("/")}">← 返回</a><article><header class="article-header"><div class="article-meta"><a href="${taxonomyHref("category", post.category || "未分类")}">${escapeHtml(post.category || "未分类")}</a><span>·</span><time datetime="${escapeHtml(post.date)}">${escapeHtml(post.date.replaceAll("-", "."))}</time></div><h1>${escapeHtml(post.title)}</h1></header><div class="prose">${body}</div><div class="article-tags">${tags}</div></article></div></div>${backToTop()}`;
 }
 
 await fs.rm(publicDir, { recursive: true, force: true });
@@ -93,6 +91,8 @@ await fs.mkdir(cacheDir, { recursive: true });
 for (const asset of ["site.css", "article.css", "site.js", "components.js", "search.js", "taxonomy.js"]) {
   await fs.copyFile(path.join(here, "assets", asset), path.join(publicDir, "assets", asset));
 }
+
+await fs.cp(path.join(here, "assets", "fonts"), path.join(publicDir, "assets", "fonts"), { recursive: true });
 
 async function writeRoute(route, html) {
   const dir = route === "/" ? publicDir : path.join(publicDir, route.replace(/^\/+|\/+$/g, ""));
@@ -103,7 +103,7 @@ async function writeRoute(route, html) {
 await writeRoute("/", page({ title: site.title, current: "/", content: homeContent() }));
 await writeRoute("/taxonomy/", page({ title: "分类", current: "/taxonomy/", content: taxonomyContent(), scripts: ["/assets/taxonomy.js"] }));
 await writeRoute("/search/", page({ title: "搜寻", current: "/search/", content: searchContent(), scripts: ["/assets/search.js"] }));
-await writeRoute("/about/", page({ title: "关于我", current: "/about/", content: `<div class="article-shell about-page"><div class="prose">${markdownToHtml(site.aboutMarkdown || "")}</div></div>` }));
+await writeRoute("/about/", page({ title: "关于我", current: "/about/", content: `<div class="article-shell about-page"><div class="prose">${markdownToHtml(aboutMarkdown)}</div></div>` }));
 for (const post of articles) {
   await writeRoute(`/articles/${post.slug}/`, page({ title: post.title, description: post.summary, content: articleContent(post), styles: ["/assets/article.css"] }));
 }

@@ -29,8 +29,9 @@ export function siteHeader(site, current, href) {
   </header>`;
 }
 
-export function articleTools() {
-  return `<aside class="toc-rail"><details class="article-toc" open><summary>On this page</summary><nav aria-label="文章目录"></nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></details></aside>`;
+export function articleTools(headings = []) {
+  const links = headings.map(({ id, level, title }) => `<a href="#${encodeURIComponent(id)}" data-level="${level}">${escapeHtml(title)}</a>`).join('');
+  return `<aside class="toc-rail"${headings.length ? '' : ' hidden'}><details class="article-toc" open><summary>文章目录</summary><nav aria-label="文章目录">${links}</nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></details></aside>`;
 }
 
 export function backToTop() {

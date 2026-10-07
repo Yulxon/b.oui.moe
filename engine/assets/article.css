@@ -1,7 +1,7 @@
-/* Measured against blog.nyaw.xyz article pages; fonts are local fallbacks. */
+/* Reference typography, using the bundled LXGW WenKai font. */
 .article-layout .prose {
   --paragraph-gap: 21.25px;
-  font-family: "PingFang SC", "Hiragino Sans GB", "Wotfard", "TsangerYunHei W04", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-family: var(--font);
   font-size: 16px;
   line-height: 28px;
   color: #374151;
@@ -35,7 +35,7 @@
 .article-layout .prose hr { border: 0; height: 2px; border-radius: 12px; background: #e4ecdb; margin: 3em 0; }
 .article-layout .prose img { width: 100%; margin: 2em 0; }
 .article-layout .prose :is(h2, h3, h4, hr) + * { margin-top: 0; }
-.article-header h1 { font-family: ui-sans-serif, system-ui, sans-serif; color: #000; }
+.article-header h1 { font-family: var(--font); color: #000; }
 @media (min-width: 1024px) {
   .article-layout .prose { --paragraph-gap: 22.6666px; font-size: 18px; line-height: 32px; }
 }

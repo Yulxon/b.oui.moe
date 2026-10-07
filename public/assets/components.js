@@ -41,14 +41,12 @@ export function initArticle(layout) {
   if (!layout) return;
   const prose = layout.querySelector('.prose');
   const root = document.documentElement;
-  const headings = [...prose.querySelectorAll('h2, h3, h4')];
+  const headings = [...prose.querySelectorAll('h1, h2, h3, h4, h5, h6')];
   const toc = layout.querySelector('.article-toc');
   const nav = toc.querySelector('nav');
   const reading = toc.querySelector('output');
   toc.parentElement.hidden = headings.length === 0;
-  const mobile = window.matchMedia('(max-width: 900px)');
-  toc.open = !mobile.matches;
-  mobile.addEventListener('change', () => { toc.open = !mobile.matches; });
+  nav.replaceChildren();
   const ids = new Set([...document.querySelectorAll('[id]')].filter(el => !headings.includes(el)).map(el => el.id));
   const links = [];
   for (const [index, heading] of headings.entries()) {
@@ -62,7 +60,6 @@ export function initArticle(layout) {
     link.href = `#${encodeURIComponent(id)}`;
     link.textContent = heading.textContent;
     link.dataset.level = heading.tagName.slice(1);
-    link.addEventListener('click', () => { if (mobile.matches) toc.open = false; });
     nav.append(link);
     links.push(link);
   }

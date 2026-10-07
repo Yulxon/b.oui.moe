@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="light">
   <meta name="description" content="">
   <title>面试准备 · b.oui.moe</title>
+  <link rel="stylesheet" href="/assets/fonts/lxgw-wenkai/font.css">
   <link rel="stylesheet" href="/assets/site.css">
   <link rel="stylesheet" href="/assets/article.css">
 </head>
@@ -16,69 +17,67 @@
     <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span></button>
     <div class="nav-wrap" id="site-menu"><nav class="site-nav" aria-label="主导航"><span class="nav-highlight" aria-hidden="true"></span><a href="/about/">我?</a><a href="/taxonomy/">分类</a><a href="/search/">搜寻</a><a href="/">首页</a></nav></div>
   </header>
-    <main><div class="reading-progress" aria-hidden="true"><span></span></div><div class="article-layout"><aside class="toc-rail"><details class="article-toc" open><summary>On this page</summary><nav aria-label="文章目录"></nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></details></aside><div class="article-shell"><a class="article-back" href="/">← 返回</a><article><header class="article-header"><div class="article-meta"><a href="/taxonomy/?view=category&category=%E6%9C%AA%E5%88%86%E7%B1%BB">未分类</a><span>·</span><time datetime="2026-03-15">2026.03.15</time></div><h1>面试准备</h1></header><div class="prose"><h2 id="关于我">关于我</h2>
+    <main><div class="reading-progress" aria-hidden="true"><span></span></div><div class="article-layout"><aside class="toc-rail"><details class="article-toc" open><summary>文章目录</summary><nav aria-label="文章目录"><a href="#%E5%85%B3%E4%BA%8E%E6%88%91" data-level="2">关于我</a><a href="#%E9%A2%98%E7%9B%AE%E4%B8%80-%E5%B7%A5%E4%BD%9C%E7%90%86%E5%BF%B5%E5%92%8C%E5%8F%91%E5%B1%95%E8%B7%AF%E7%BA%BF" data-level="2">题目一：工作理念和发展路线</a><a href="#%E9%A2%98%E7%9B%AE%E4%BA%8C-%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%9A%84%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2" data-level="2">题目二：系统开发调试的方法探索</a><a href="#%E9%A2%98%E7%9B%AE%E4%B8%89-fydeos%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90" data-level="2">题目三：FydeOS整体架构分析</a></nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></details></aside><div class="article-shell"><a class="article-back" href="/">← 返回</a><article><header class="article-header"><div class="article-meta"><a href="/taxonomy/?view=category&category=%E6%9C%AA%E5%88%86%E7%B1%BB">未分类</a><span>·</span><time datetime="2026-03-15">2026.03.15</time></div><h1>面试准备</h1></header><div class="prose"><h2 id="关于我">关于我</h2>
 <p>我毕业于xxx，对操作系统工程师的岗位适配度比较高，也很认同燧炻创新的理念，希望未来能一起共事。</p>
 <p>我的优势是抽象思维比较强，高中物理成绩很好，也喜欢研究原理和挑战难题。我对操作系统比较感兴趣也充满好奇，安装了NixOS作为主力，并在使用的过程中对操作系统的组成比较了解。</p>
 <h2 id="题目一-工作理念和发展路线">题目一：工作理念和发展路线</h2>
 <p>工作生活平衡、弹性工作、尊重个性，核心在于对员工个人生活及性格特质的尊重，反教条和驯化，强调自我个性和创造力。除却员工身份之外，更作为一个追求共同理想的人。</p>
 <p>产品：XpressReal T3、Fydetab Duo、FydeSign</p>
 <h2 id="题目二-系统开发调试的方法探索">题目二：系统开发调试的方法探索</h2>
-<ul>
-<li>fork()创建子进程</li>
-<li>schedule()调度器</li>
-<li>strace日志、dmesg、ldd动态链接</li>
-<li>kill信号量，关机和结束进程</li>
-<li>驱动注册、kernel mods、udev</li>
-</ul>
+<p>fork()创建子进程</p>
+<p>schedule()调度器</p>
+<p>strace日志、dmesg、ldd动态链接</p>
+<p>kill信号量，关机和结束进程</p>
+<p>驱动注册、kernel mods、udev</p>
 <h2 id="题目三-fydeos整体架构分析">题目三：FydeOS整体架构分析</h2>
 <p>这部分摘自ChatGPT，AI会让人产生自己什么都会的错觉，后面还是直接研究openFyde吧。</p>
-<pre><code class="language-text">kernel/
- ├─ binder/             # Android IPC
- ├─ ashmem/             # Android shared memory
- ├─ seccomp/            # 系统调用限制
- ├─ namespaces/         # PID / mount / network namespace
- ├─ dm-verity/          # verified boot hash check
- ├─ KVM / virtio/       # Crostini VM 支持
+<pre><code class="language-text">kernel/  
+ ├─ binder/             # Android IPC  
+ ├─ ashmem/             # Android shared memory  
+ ├─ seccomp/            # 系统调用限制  
+ ├─ namespaces/         # PID / mount / network namespace  
+ ├─ dm-verity/          # verified boot hash check  
+ ├─ KVM / virtio/       # Crostini VM 支持  
  └─ drivers/            # GPU, WiFi, camera, OEM hardware
 
-platform2/
- ├─ cryptohome/         # 用户加密 home, TPM 支持
- ├─ shill/              # 网络管理, DBus
- ├─ update_engine/      # A/B OTA更新
- ├─ power_manager/      # 电源管理
+platform2/  
+ ├─ cryptohome/         # 用户加密 home, TPM 支持  
+ ├─ shill/              # 网络管理, DBus  
+ ├─ update_engine/      # A/B OTA更新  
+ ├─ power_manager/      # 电源管理  
  └─ session_manager/    # 登录 session 管理
 
-crosvm/
- ├─ devices/            # virtio-net, block, gpu, input
- ├─ hypervisor/         # KVM interface
- ├─ vm/                 # memory &amp; sandbox management
- └─ main.rs             # VM启动主逻辑
+crosvm/  
+ ├─ devices/            # virtio-net, block, gpu, input  
+ ├─ hypervisor/         # KVM interface  
+ ├─ vm/                 # memory &amp; sandbox management  
+ └─ main.rs             # VM启动主逻辑  
 
-vm_tools/crostini/
- └─ termina VM management scripts
+vm_tools/crostini/  
+ └─ termina VM management scripts  
 
-arc/
- ├─ containers/         # Android container管理
- ├─ bridge/             # ARC bridge, ChromeOS服务桥接
- ├─ setup/              # 初始化容器环境
+arc/  
+ ├─ containers/         # Android container管理  
+ ├─ bridge/             # ARC bridge, ChromeOS服务桥接  
+ ├─ setup/              # 初始化容器环境  
  └─ services/           # Android服务
 
-chrome/
- ├─ browser/            # browser process
- ├─ renderer/           # renderer process
- ├─ gpu/                # GPU process
- ├─ ui/                 # Ash / Wayland integration
- └─ mojo/               # IPC interface
+chrome/  
+ ├─ browser/            # browser process  
+ ├─ renderer/           # renderer process  
+ ├─ gpu/                # GPU process  
+ ├─ ui/                 # Ash / Wayland integration  
+ └─ mojo/               # IPC interface  
 
-ui/ozone/
- ├─ platform/
- │   ├─ drm/            # GPU &amp; display
- │   └─ wayland/        # Wayland backend
+ui/ozone/  
+ ├─ platform/  
+ │   ├─ drm/            # GPU &amp; display  
+ │   └─ wayland/        # Wayland backend  
  └─ public/             # API to Chromium
 
-third_party/fydeos/
- ├─ fydeos_account/     # FydeOS账号系统
- ├─ fydeos_store/       # 应用商店
+third_party/fydeos/  
+ ├─ fydeos_account/     # FydeOS账号系统  
+ ├─ fydeos_store/       # 应用商店  
  └─ OEM/hardware/       # 定制驱动 / Android增强</code></pre></div><div class="article-tags"></div></article></div></div><a class="back-top" href="#top" aria-label="返回顶部" hidden><span aria-hidden="true">⌃</span></a></main>
   </div>
   <footer class="site-footer"><a href="/">b.oui.moe</a><span>Place to place myself</span></footer>
