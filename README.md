@@ -1,83 +1,119 @@
-# b.oui.moe
+# b.oui.moe — Data → Engine → Public
 
-Yulxon's blog, rebuilt from scratch as a **SolidStart (Vinxi) + MDX + UnoCSS** static site, modeled on [blog.nyaw.xyz](https://github.com/oluceps/blog.nyaw.xyz).
+A small static writing site built around an append-only author workspace and a deliberately simple publishing engine.
 
-## Stack
+The visual direction borrows the calm, chronological feel of `blog.nyaw.xyz`: generous whitespace, year/season groupings, small metadata, and article pages that mostly get out of the way. It is not a clone.
 
-- [SolidStart](https://start.solidjs.com) (Vinxi) — file-based routing, SSR/prerender
-- [MDX](https://mdxjs.com) — posts live under `src/routes/(post)/*.mdx`
-- [UnoCSS](https://unocss.dev) — utility CSS with a custom theme (`uno.config.ts`)
-- [Shiki](https://shiki.style) — syntax highlighting with notation transformers
-- [content-collections](https://content-collections.dev) — Zod-validated post frontmatter
-- Static output (`.output/public`) deployed to GitHub Pages
+## Architecture
 
-## Development
-
-```bash
-pnpm install
-pnpm dev        # http://localhost:3000
-pnpm build      # static build -> .output/public
-pnpm gen        # regenerate public/rss.xml + public/sitemap.xml
-pnpm build:all  # build && gen
+```text
+Data (author history)
+  ↓  Codex / AI reads the new diff and preserves voice
+Engine (normalized content + deterministic generator)
+  ↓  npm run build
+Public (plain HTML/CSS/JS)
+  ↓  GitHub Pages
+Web
 ```
 
-## Project layout
+### Data
 
-```
-app.config.ts            # Vinxi/SolidStart + MDX + UnoCSS pipeline
-content-collections.ts   # post collection schema (date/title/description/tags/categories/draft/toc)
-src/
-  constant.tsx           # site config (title, author, menu, about)
-  components/            # Header, Footer(+glow), Arti (index), Page+TOC, Taxo, Mdx mapping...
-  ingredients/           # MDX ingredients (Emph, QuickLink, RandReveal, Comment...)
-  routes/
-    index.tsx            # 序 — seasonal post index
-    (post)/*.mdx         # posts
-    (post).tsx           # post layout (title, meta, TOC, tags)
-    taxonomy.tsx         # categories/tags archive with heatmap
-    search.tsx           # client-side search over posts
-    me/                  # about page
-    links.tsx            # 友链
-    [...404].tsx         # 404
-scripts/                 # RSS + sitemap generation (run after build)
-.github/workflows/       # GitHub Pages build & deploy
-```
+`data/` contains prompts, drafts, notes and context for AI. It is **append-only**: existing bytes are not rewritten. If something changes, append an update to the end of the file.
 
-## Writing a post
+This makes the author's history inspectable and lets an agent use `git diff -- data/` to see what is new.
 
-Add a file to `src/routes/(post)/`:
+### Engine
 
-```mdx
----
-date: '2026-01-01T00:00:00.000Z'
-title: My post
-description: optional one-liner
-tags: [tag1, tag2]
-categories: [随笔]
-draft: false
-toc: true
----
+`engine/generated/` contains the reviewed, structured representation of the content after AI/editorial processing.
 
-## content here
-```
+`engine/build.mjs` turns that content into static pages. The implementation intentionally uses Node's standard library and browser-native HTML/CSS/JS. There is no frontend framework, server, database or runtime dependency.
 
-Set `draft: true` to hide it from the index, taxonomy, RSS and sitemap.
+### Public
 
-## Nix development environment
+`public/` is generated output and is the directory deployed to GitHub Pages. Do not maintain it by hand.
 
-A [flake](flake.nix) provides a reproducible dev shell (NixOS / nix with flakes):
+## v1 features
 
-```bash
-nix develop          # or: direnv allow  (see .envrc)
-pnpm dev             # http://localhost:3000
+- chronological home page grouped by year and season;
+- archive / categories / tags page;
+- client-side static search with a generated JSON index;
+- about page;
+- article pages;
+- blue, pink and white themes, persisted in `localStorage`;
+- responsive layout;
+- GitHub Pages workflow.
+
+The light-blue / pink / white color system is a restrained, stylized trans-flag palette rather than a literal flag pasted across the whole UI.
+
+## Local use
+
+Requires Node.js 22+.
+
+```sh
+npm run build
+npm run check
+npm run dev
 ```
 
-The shell pins **nodejs 22** (matching the GitHub Actions CI) and **corepack**;
-`pnpm` follows the `packageManager` field in `package.json` (pnpm 9.15.9, same
-as CI). `flake.lock` pins the exact nixpkgs revision.
+`npm run dev` serves the generated site at `http://localhost:4321`.
 
-## Deployment
+There are no npm packages to install in v1.
 
-GitHub Actions (`pnpm build:all`) prerenders the site into `.output/public` and
-uploads it to GitHub Pages. `rss.xml`/`sitemap.xml` are generated after the
-build and copied into the artifact. Domain: `https://b.oui.moe`.
+## Writing workflow
+
+1. Write or append notes under `data/`.
+2. Do not edit old Data text; append a correction/update instead.
+3. Ask Codex to read `AGENTS.md`, inspect `git diff -- data/`, and update only the affected files in `engine/generated/`.
+4. Review the generated content diff. The source voice should still sound like the author.
+5. Run `npm run build && npm run check`.
+6. Commit Data + Engine + Public together.
+
+Example instruction to Codex:
+
+```text
+Read AGENTS.md. Inspect git diff -- data/ and process only the newly appended author material. Preserve the author's meaning and voice. Update the minimal affected engine/generated files, rebuild public, run checks, and summarize exactly what changed. Do not rewrite existing Data.
+```
+
+## Add an article
+
+Create or append the raw material in `data/drafts/...`, then generate an article JSON under `engine/generated/articles/`:
+
+```json
+{
+  "slug": "example-post",
+  "title": "Example",
+  "date": "2026-10-07",
+  "category": "随笔",
+  "tags": ["example"],
+  "summary": "One-line summary.",
+  "status": "published",
+  "source": "data/drafts/example.md",
+  "bodyMarkdown": "Markdown body"
+}
+```
+
+Use lowercase kebab-case slugs. `npm run check` catches missing fields and duplicate/invalid slugs.
+
+## GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` builds `public/` on pushes to `main` and deploys it with the official GitHub Pages actions.
+
+In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions** once. After that, pushes to `main` deploy automatically.
+
+This repository is configured for the existing custom domain `https://b.oui.moe`, so the workflow builds with an empty base path and the generator emits `public/CNAME`.
+
+## Theme editing
+
+All visual tokens live near the top of `engine/assets/site.css`.
+
+- `html[data-theme="blue"]`
+- `html[data-theme="pink"]`
+- base `:root` = white theme
+
+Keep contrast readable. The flag palette should be an accent system, not a readability tax.
+
+## Why no framework?
+
+Because v1 is a static personal writing site. A framework would mostly add conventions, dependencies and upgrade work without making the core tasks—render Markdown, list posts, search a JSON index, switch CSS variables—meaningfully simpler.
+
+If future requirements genuinely demand one, the Data/Engine/Public boundary makes the rendering layer replaceable without changing the author workflow.
