@@ -1,38 +1,4 @@
-# dependencies
-/node_modules
-
-# build outputs
-/.output
-/.vinxi
-/dist
-.solid
-/.content-collections
-/public/og
-/public/rss.xml
-/public/sitemap.xml
-
-# local tooling caches
-/.corepack
-/.npm-cache
-/.local-bin
-/.pnpm-store
-/.nix-cache
-/.bin
-
-# logs & env
-/*.log
-.env
-.env*.local
-
-# IDEs
-/.idea
-/.vscode
 .DS_Store
-Thumbs.db
-
-# misc
-/.stfolder
-/.direnv
-/.devenv*
-/result
-/screenshot.png
+node_modules/
+engine/cache/*
+!engine/cache/.gitkeep

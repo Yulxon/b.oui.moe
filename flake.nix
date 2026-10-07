@@ -1,5 +1,5 @@
 {
-  description = "b.oui.moe — SolidStart + MDX + UnoCSS static blog (dev environment)";
+  description = "b.oui.moe — Data → Engine → Public static blog (dev environment)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -14,9 +14,8 @@
       devShells = forAllSystems (system:
         let
           pkgs = import nixpkgs { inherit system; };
-          # 与 CI (GitHub Actions, node 22) 保持一致
-          nodejs = pkgs.nodejs_22;
-          pnpm = pkgs.pnpm;
+          # 与 CI (GitHub Actions, node 24) 保持一致
+          nodejs = pkgs.nodejs_24;
         in
         {
           default = pkgs.mkShell {
@@ -24,17 +23,12 @@
 
             packages = [
               nodejs
-              pnpm
-              pkgs.corepack
               pkgs.nixfmt
             ];
 
             shellHook = ''
-              # pnpm 遵循 package.json 的 packageManager 字段（corepack）
-              export COREPACK_HOME="''${COREPACK_HOME:-$HOME/.cache/node/corepack}"
-
-              echo "node $(node --version) · pnpm $(pnpm --version)"
-              echo "开发：pnpm dev   构建：pnpm build:all"
+              echo "node $(node --version) · npm $(npm --version)"
+              echo "开发：npm run dev   构建：npm run build"
             '';
           };
         });
