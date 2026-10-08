@@ -9,7 +9,7 @@ data/    可编辑 Markdown 和站点配置
   ↓ npm run build
 engine/  模板、样式、Markdown 渲染和静态页面生成
   ↓
-public/  GitHub Pages 发布的 HTML、CSS、JavaScript 和字体
+public/  GitHub Pages 发布的 HTML、CSS 和 JavaScript
 ```
 
 直接编辑 `data/articles/*.md` 即可更新文章；`data/about.md` 是关于页面，`data/site.json` 是站点配置。没有第二份文章 JSON 正文。
@@ -94,11 +94,7 @@ engine/templates/
 
 ## 字体与依赖
 
-中文使用自托管 LXGW WenKai（霞鹜文楷），字体和许可证在 `engine/assets/fonts/lxgw-wenkai/`。`yaml` 是唯一运行依赖，用于解析文章 frontmatter。
-
-构建时按每页实际文字内联精简的字体声明，并预加载两个常用字形分片，避免首次打开页面时等待完整字体 CSS。搜索和分类页也覆盖动态结果中的文字；新增内容后重新构建即可更新字体声明。
-
-Engine 保留完整字体源，`public/` 仅包含当前站点使用的分片和许可证。构建会自动增加新文章需要的分片并剔除不再使用的分片，无需手工维护字库清单。
+网站字体采用系统字体栈，无需额外下载 Web Font：正文优先宋体/思源宋体，文章标题和关于页标题优先楷体，导航和界面使用系统无衬线字体。字体栈集中在 `engine/styles/tokens.css`，具体应用在 `typography.css` 和 `article.css`。不同操作系统安装字体不同，因此实际显示会有差异。
 
 网站继续使用单一纸色/绿色视觉体系；颜色集中在 `palette.css`，布局和颜色互不混杂。
 
