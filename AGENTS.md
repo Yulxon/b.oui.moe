@@ -5,29 +5,68 @@ This repository is maintained by humans and coding agents together.
 ## Layers
 
 1. `data/` is editable author content and project instructions.
-2. `engine/` is deterministic build code and shared assets.
+2. `engine/` is deterministic build code, templates, styles and shared assets.
 3. `public/` is generated output published by GitHub Pages.
 
-Data is no longer append-only. Humans and AI may edit, reorganize, or remove Markdown, `data/prompts/`, and `data/README.md` as the project evolves. Git tracks history. Preserve the author's meaning and voice when editing; do not invent facts or conclusions.
+Humans and AI may edit Data as requested. Preserve the author's meaning and voice; do not invent facts or conclusions. Only `draft: false` publishes an article; preserve publication state unless explicitly asked to change it.
+
+## Engine boundaries
+
+Keep these responsibilities separate:
+
+- `engine/templates/` — HTML structure;
+- `engine/styles/` — visual presentation;
+- `engine/assets/` — browser JavaScript and self-hosted assets;
+- `engine/lib/` — reusable content/rendering logic;
+- `engine/build.mjs` — orchestration only.
+
+Do not move large page-specific HTML strings back into `build.mjs`.
+
+## Style editing
+
+For visual changes, choose the smallest appropriate surface:
+
+1. width/font/spacing/radius knob → `engine/styles/tokens.css`;
+2. color → `engine/styles/palette.css`;
+3. page geometry/responsive layout → `engine/styles/layout.css`;
+4. text hierarchy → `engine/styles/typography.css`;
+5. UI component → `engine/styles/components.css`;
+6. article-reading detail → `engine/styles/article.css`;
+7. tiny author-specific override → `engine/styles/custom.css`.
+
+### Protected author overrides
+
+`engine/styles/custom.css` is author-owned. Unless the author explicitly requests changes to that file, agents must not rewrite, delete, sort, merge, normalize, deduplicate, or move rules out of it. Do not remove a rule merely because it looks redundant or unused.
+
+Keep colors in `palette.css` and layout values out of it. There is currently one visual palette; do not reintroduce theme switching unless explicitly requested.
 
 ## Authoring
 
-`data/articles/*.md` is the final article source. YAML frontmatter supplies title, date, categories, tags, description, and publication status. The build reads Markdown directly; there is no AI normalization step or duplicate article JSON. Only `draft: false` publishes an article; an omitted draft field defaults to a draft. Preserve publication status unless a request explicitly changes it.
-
-`data/about.md` supplies the about page; `data/site.json` supplies site settings. Prompts guide optional collaboration and are not published. AI may update Markdown and instructions when requested work requires it.
+`data/articles/*.md` is the final article source. YAML frontmatter supplies title, date, categories, tags, description and publication status. `data/about.md` supplies the about page; `data/site.json` supplies site settings.
 
 ## Implementation
 
 Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; fonts are self-hosted assets with their license.
 
-Never hand-maintain `public/`. Port temporary debugging changes into Engine or Data and rebuild.
+Never hand-maintain `public/` as a second source of truth. Port temporary debugging changes into Engine or Data and rebuild.
 
 ## Validation
 
-After relevant changes run `npm run test`, `npm run check:data`, `npm run build`, and `npm run check`. Inspect the diff for unrelated changes and unintended prose edits. Verify desktop and mobile when changing layout or typography.
+After relevant changes run:
+
+```sh
+npm run test
+npm run check:data
+npm run build
+npm run check
+```
+
+For local visual work, `npm run dev` watches style files, rebuilds CSS only, and reloads the browser. Data/templates/lib changes trigger a full rebuild.
+
+Inspect the final diff for unrelated changes and unintended prose edits. Verify desktop and mobile when changing layout or typography.
 
 ## Design and features
 
-Follow the quiet reading appearance of `blog.nyaw.xyz`: generous whitespace, chronological year/season groups, unobtrusive metadata, green accents on a paper background, and article-first pages. There is one style; the previous blue/pink/white theme switcher was removed at the user's request.
+Follow the quiet reading appearance of `blog.nyaw.xyz`: generous whitespace, chronological year/season groups, unobtrusive metadata, a restrained paper/green palette, and article-first pages.
 
-Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, and GitHub Pages deployment.
+Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, self-hosted LXGW WenKai, and GitHub Pages deployment.

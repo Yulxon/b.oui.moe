@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node engine/build.mjs",
-    "dev": "node engine/build.mjs && node engine/serve.mjs",
+    "dev": "node engine/dev.mjs",
     "check": "node engine/check.mjs",
     "check:data": "node engine/check-data.mjs",
     "test": "node --test engine/lib/*.test.mjs"

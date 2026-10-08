@@ -1,0 +1,11 @@
+/*
+ * AUTHOR-OWNED OVERRIDES — loaded last on every page.
+ *
+ * Put tiny subjective adjustments here. Agents must not rewrite, sort,
+ * merge, delete, or "clean up" this file unless the author explicitly asks.
+ *
+ * Examples:
+ *   :root { --article-width: 680px; }
+ *   .year-label { opacity: .72; }
+ *   .article-layout .prose h2 { margin-top: 2.2em; }
+ */

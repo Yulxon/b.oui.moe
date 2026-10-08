@@ -1,0 +1,35 @@
+.site-shell { width: 100%; flex: 1; }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 22px var(--header-x) 14px; min-height: 64px; gap: 24px; z-index: 40; }
+.home-page .site-header { position: fixed; inset: 0 0 auto; background: var(--paper); }
+.nav-wrap { display: flex; align-items: center; gap: 18px; }
+main { padding-bottom: var(--page-bottom); }
+.chronology { width: var(--home-width); padding: 24px; margin: 84px auto 0; }
+.taxonomy-layout { max-width: var(--taxonomy-width); margin: auto; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; }
+.taxonomy-layout > section { min-width: 0; }
+.taxonomy-rail { border-left: 1px solid var(--line); padding-left: 24px; }
+.search-box { width: min(var(--search-width), calc(100% - 48px)); margin: 56px auto 0; }
+.article-layout { position: relative; }
+.article-shell { width: var(--article-width); padding: 48px var(--article-x) 0; margin: auto; }
+.toc-rail { position: absolute; left: 36px; top: 48px; bottom: 0; width: var(--toc-width); }
+.site-footer { display: flex; gap: 20px; justify-content: center; padding: 24px; }
+
+@media (max-width: 900px) {
+  .article-shell { width: var(--article-width-tablet); }
+  .toc-rail { position: static; width: var(--article-width-tablet); padding: 12px 24px 0; margin: auto; }
+}
+
+@media (max-width: 767px) {
+  .site-header { padding: 14px 18px 10px; min-height: 50px; flex-wrap: wrap; gap: 12px; }
+  .nav-wrap { width: 100%; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .js .nav-wrap { display: none; }
+  .js .nav-wrap.is-open { display: flex; background: var(--surface); padding: 10px 0; }
+  .chronology { width: 100%; padding: 8px 16px 24px; margin-top: 76px; }
+  .taxonomy-layout { display: flex; flex-direction: column; gap: 20px; }
+  .taxonomy-rail { order: -1; padding: 0; border: 0; }
+  .search-box { margin-top: 48px; }
+  .article-shell { width: 100%; padding: 12px var(--article-x) 0; }
+  .toc-rail { width: 100%; }
+  .site-footer { flex-wrap: wrap; gap: 8px 16px; }
+  .js .nav-wrap.is-open { position: absolute; top: 50px; right: 14px; width: 160px; padding: 6px; flex-direction: column; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 18px #0000000f; }
+  .js .nav-wrap .site-nav { flex-direction: column; }
+}

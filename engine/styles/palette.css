@@ -1,0 +1,25 @@
+/* One palette, isolated from layout/typography so color tweaks stay local. */
+:root {
+  color-scheme: light;
+  --paper: #fbfaf6;
+  --ink: #2a2a28;
+  --muted: #8b8b86;
+  --line: #ebe9e1;
+  --accent: #6f9052;
+  --accent-soft: #e4ecdb;
+  --surface: #fff;
+
+  --green-300: #b5caa0;
+  --green-400: #8dab70;
+  --green-200: #ccdabc;
+  --summer: #f17c67;
+  --autumn: #b7b0d5;
+  --winter: #92cace;
+
+  --prose-ink: #374151;
+  --prose-strong: #111827;
+  --prose-muted: #4a4a48;
+  --code-ink: #182013;
+  --code-block-ink: #393a34;
+  --code-block-bg: #faf9f5;
+}

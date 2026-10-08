@@ -1,29 +1,34 @@
 # b.oui.moe
 
-一个直接从 Markdown 构建的静态博客。外观参考 blog.nyaw.xyz：纸色背景、绿色强调、按年份和季节排列的文章列表，以及专注阅读的正文页面。
+一个直接从 Markdown 构建的静态博客。Data 保存可编辑内容，Engine 负责确定性生成，Public 是最终发布结果。
 
 ## 内容与构建
 
 ```text
 data/    可编辑 Markdown 和站点配置
   ↓ npm run build
-engine/  确定性的 Markdown 渲染和静态页面生成
+engine/  模板、样式、Markdown 渲染和静态页面生成
   ↓
 public/  GitHub Pages 发布的 HTML、CSS、JavaScript 和字体
 ```
 
-直接编辑 `data/articles/*.md` 即可更新最终文章，无需 AI 生成文章，也不维护第二份 JSON 正文。`data/about.md` 是关于页面；`data/site.json` 是站点配置。作者和 AI 都可以修改 Data、提示文件和说明。格式和草稿规则见 [data/README.md](data/README.md)。
+直接编辑 `data/articles/*.md` 即可更新文章；`data/about.md` 是关于页面，`data/site.json` 是站点配置。没有第二份文章 JSON 正文。
 
 ## 本地开发
 
-需要 Node.js 22 或更高版本，CI 使用 Node.js 24。也可通过保留的 Nix flake / direnv 进入开发环境。
+需要 Node.js 22 或更高版本，CI 使用 Node.js 24；NixOS 可直接 `nix develop` / `direnv allow`。
 
 ```sh
 npm ci
 npm run dev
 ```
 
-访问 `http://localhost:4321`。每次更新后重新构建；开发服务器没有自动构建监视器。
+访问 `http://localhost:4321`。开发服务器会自动监视：
+
+- `engine/styles/`：只重新生成 CSS，然后自动刷新浏览器；
+- `data/`、`engine/templates/`、`engine/lib/`、`engine/assets/`：重新构建站点并自动刷新。
+
+完整验证：
 
 ```sh
 npm run test
@@ -32,12 +37,63 @@ npm run build
 npm run check
 ```
 
-生成结果在 `public/`，不要直接编辑。构建支持 `SITE_BASE`，在域名根目录发布时留空。GitHub Pages 工作流安装依赖、运行检查、构建并发布静态输出。
+## 手动微调样式
 
-## 功能与维护
+日常调样式不需要碰 `build.mjs`。优先按下面顺序找：
 
-首页、归档/分类/标签、静态本地搜索、关于页、文章目录、移动导航和返回顶部均使用浏览器原生 API。网站只有一套纸色与绿色样式。
+```text
+engine/styles/
+├── tokens.css       最常改：宽度、字号、行高、圆角、间距
+├── palette.css      颜色
+├── base.css         全局基础规则
+├── layout.css       页面宽度、网格、header/footer、响应式
+├── typography.css   标题、列表元信息、基础正文
+├── components.css   导航、归档、搜索、TOC、按钮等组件
+├── article.css      仅文章阅读页的细节
+└── custom.css       作者手工覆盖层，永远最后加载
+```
 
-中文使用自托管 LXGW WenKai（霞鹜文楷），提供常规与粗体字重，按 Unicode 范围分包加载，保留系统字体回退。字体文件和 OFL 许可在 `engine/assets/fonts/lxgw-wenkai/`，无需访问字体 CDN。正文保持 17px 和 1.625 倍行高；代码使用等宽字体。
+最常用的是 `tokens.css`。例如：
 
-`yaml` 是唯一运行依赖，用于正确处理 Markdown 元信息中的 YAML。UI 组件是独立实现的静态组件；来源和维护方式见 [engine/components.md](engine/components.md)。
+```css
+:root {
+  --home-width: 50%;
+  --article-width: 50%;
+  --body-size: 16px;
+  --post-title-size: 15.5px;
+  --article-title-size: 32px;
+  --prose-size: 17px;
+}
+```
+
+觉得文章太宽，只改 `--article-width`；正文太密，只改字号/行高；不想研究规则来源的细小审美调整直接写进 `custom.css`。
+
+`custom.css` 是作者所有的“视觉草稿纸”。`AGENTS.md` 明确要求 AI 默认不得整理、合并或删除它。
+
+## HTML 结构
+
+页面结构也从生成器主体中拆开了：
+
+```text
+engine/templates/
+├── layout.mjs
+├── home.mjs
+├── taxonomy.mjs
+├── search.mjs
+├── about.mjs
+└── article.mjs
+```
+
+比如想把文章日期从标题上方挪到标题旁边，直接改 `article.mjs` 和相应 CSS，不需要在巨大的 `build.mjs` 模板字符串里翻找。
+
+## 字体与依赖
+
+中文使用自托管 LXGW WenKai（霞鹜文楷），字体和许可证在 `engine/assets/fonts/lxgw-wenkai/`。`yaml` 是唯一运行依赖，用于解析文章 frontmatter。
+
+网站继续使用单一纸色/绿色视觉体系；颜色集中在 `palette.css`，布局和颜色互不混杂。
+
+## Public
+
+`public/` 是构建结果，不要直接维护。如果在浏览器里临时改 CSS 找到了满意值，把修改放回 Engine 后重新构建。
+
+GitHub Pages workflow 会在 PR 中验证，在 `main` push 后构建并部署到 `b.oui.moe`。
