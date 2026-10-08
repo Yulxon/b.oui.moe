@@ -96,6 +96,8 @@ engine/templates/
 
 中文使用自托管 LXGW WenKai（霞鹜文楷），字体和许可证在 `engine/assets/fonts/lxgw-wenkai/`。`yaml` 是唯一运行依赖，用于解析文章 frontmatter。
 
+构建时按每页实际文字内联精简的字体声明，并预加载两个常用字形分片，避免首次打开页面时等待完整字体 CSS。搜索和分类页也覆盖动态结果中的文字；新增内容后重新构建即可更新字体声明。
+
 网站继续使用单一纸色/绿色视觉体系；颜色集中在 `palette.css`，布局和颜色互不混杂。
 
 ## Public

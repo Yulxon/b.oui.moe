@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadArticles } from "./lib/content.mjs";
 import { markdownToHtml, stripMarkdown } from "./lib/markdown.mjs";
+import { parseFontFaces, fontResources } from "./lib/fonts.mjs";
 import { escapeHtml, siteHeader, chronologicalContent, articleTools, backToTop } from "./lib/components.mjs";
 import { renderPage } from "./templates/layout.mjs";
 import { renderHome } from "./templates/home.mjs";
@@ -56,6 +57,10 @@ export async function build({ quiet = false } = {}) {
   const site = JSON.parse(await fs.readFile(path.join(dataDir, "site.json"), "utf8"));
   const aboutMarkdown = await fs.readFile(path.join(dataDir, "about.md"), "utf8");
   const articles = (await loadArticles(dataDir)).filter(post => post.status === "published");
+  const fontFaces = parseFontFaces(await fs.readFile(path.join(here, 'assets/fonts/lxgw-wenkai/font.css'), 'utf8'));
+  const dynamicFontText = articles.map(post => [post.title, post.category, ...(post.tags || []), post.summary, stripMarkdown(post.bodyMarkdown)].join(' ')).join(' ')
+    + await fs.readFile(path.join(here, 'assets/search.js'), 'utf8')
+    + await fs.readFile(path.join(here, 'assets/taxonomy.js'), 'utf8');
   const taxonomyHref = (kind, value) => href(`/taxonomy/?view=${kind}&${kind}=${encodeURIComponent(value)}`);
   const ctx = {
     site,
@@ -70,6 +75,10 @@ export async function build({ quiet = false } = {}) {
     articleTools,
     backToTop,
     markdownToHtml,
+    fontResources: (html, current) => {
+      const resources = fontResources(fontFaces, html, ['/search/', '/taxonomy/'].includes(current) ? dynamicFontText : '');
+      return { css: resources.css.replaceAll("url('/assets/", `url('${base}/assets/`), preloads: resources.preloads.map(href) };
+    },
   };
 
   await fs.rm(publicDir, { recursive: true, force: true });
