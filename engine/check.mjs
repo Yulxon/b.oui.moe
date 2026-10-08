@@ -24,4 +24,12 @@ for (const post of articles.filter(post => post.status === 'draft')) {
 const fontRoot = path.join(root, 'public/assets/fonts/lxgw-wenkai');
 const fontCss = await fs.readFile(path.join(fontRoot, 'font.css'), 'utf8');
 for (const match of fontCss.matchAll(/url\(([^)]+)\)/g)) await fs.access(path.join(fontRoot, match[1].replace(/^['"]|['"]$/g, '')));
+const referencedFonts = new Set();
+for (const route of routes.filter(route => route.endsWith('.html'))) {
+  const html = await fs.readFile(path.join(root, route), 'utf8');
+  for (const match of html.matchAll(/\/assets\/fonts\/lxgw-wenkai\/files\/([^'"\s)]+)/g)) referencedFonts.add(match[1]);
+}
+const deployedFonts = new Set(await fs.readdir(path.join(fontRoot, 'files')));
+for (const file of referencedFonts) if (!deployedFonts.has(file)) throw new Error(`Missing page font subset: ${file}`);
+for (const file of deployedFonts) if (!referencedFonts.has(file)) throw new Error(`Unused deployed font subset: ${file}`);
 console.log('Draft exclusion, search publication status, and all font subset assets verified.');

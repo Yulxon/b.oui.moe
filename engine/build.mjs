@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadArticles } from "./lib/content.mjs";
 import { markdownToHtml, stripMarkdown } from "./lib/markdown.mjs";
-import { parseFontFaces, fontResources } from "./lib/fonts.mjs";
+import { parseFontFaces, fontResources, publishFontAssets } from "./lib/fonts.mjs";
 import { escapeHtml, siteHeader, chronologicalContent, articleTools, backToTop } from "./lib/components.mjs";
 import { renderPage } from "./templates/layout.mjs";
 import { renderHome } from "./templates/home.mjs";
@@ -58,6 +58,7 @@ export async function build({ quiet = false } = {}) {
   const aboutMarkdown = await fs.readFile(path.join(dataDir, "about.md"), "utf8");
   const articles = (await loadArticles(dataDir)).filter(post => post.status === "published");
   const fontFaces = parseFontFaces(await fs.readFile(path.join(here, 'assets/fonts/lxgw-wenkai/font.css'), 'utf8'));
+  const usedFontFiles = new Set();
   const dynamicFontText = articles.map(post => [post.title, post.category, ...(post.tags || []), post.summary, stripMarkdown(post.bodyMarkdown)].join(' ')).join(' ')
     + await fs.readFile(path.join(here, 'assets/search.js'), 'utf8')
     + await fs.readFile(path.join(here, 'assets/taxonomy.js'), 'utf8');
@@ -77,6 +78,7 @@ export async function build({ quiet = false } = {}) {
     markdownToHtml,
     fontResources: (html, current) => {
       const resources = fontResources(fontFaces, html, ['/search/', '/taxonomy/'].includes(current) ? dynamicFontText : '');
+      for (const file of resources.files) usedFontFiles.add(file);
       return { css: resources.css.replaceAll("url('/assets/", `url('${base}/assets/`), preloads: resources.preloads.map(href) };
     },
   };
@@ -89,7 +91,6 @@ export async function build({ quiet = false } = {}) {
   for (const asset of ["site.js", "components.js", "search.js", "taxonomy.js", "icon.svg"]) {
     await fs.copyFile(path.join(here, "assets", asset), path.join(publicDir, "assets", asset));
   }
-  await fs.cp(path.join(here, "assets", "fonts"), path.join(publicDir, "assets", "fonts"), { recursive: true });
 
   async function writeRoute(route, html) {
     const dir = route === "/" ? publicDir : path.join(publicDir, route.replace(/^\/+|\/+$/g, ""));
@@ -104,6 +105,8 @@ export async function build({ quiet = false } = {}) {
   for (const post of articles) {
     await writeRoute(`/articles/${post.slug}/`, renderPage(ctx, { title: post.title, description: post.summary, content: renderArticle(ctx, post), styles: ["/assets/article.css"] }));
   }
+
+  await publishFontAssets(path.join(here, 'assets/fonts/lxgw-wenkai'), path.join(publicDir, 'assets/fonts/lxgw-wenkai'), fontFaces, usedFontFiles);
 
   const searchIndex = articles.map(post => ({
     slug: post.slug,

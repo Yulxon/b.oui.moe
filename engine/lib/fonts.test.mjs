@@ -25,3 +25,26 @@ test('dynamic search text includes glyphs absent from the initial page', () => {
   assert.match(fontResources(faces, '<p>A</p>', '中😀').css, /chinese.woff2/);
   assert.match(fontResources(faces, '<p>A</p>', '中😀').css, /U\+1f600/);
 });
+
+test('deployment retains licenses and only the selected subsets', async () => {
+  const { promises: fs } = await import('node:fs');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const { publishFontAssets } = await import('./fonts.mjs');
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'page-font-assets-'));
+  const source = path.join(root, 'source');
+  const output = path.join(root, 'output');
+  try {
+    await fs.mkdir(path.join(source, 'files'), { recursive: true });
+    for (const face of faces) await fs.writeFile(path.join(source, face.src), face.src);
+    await fs.writeFile(path.join(source, 'OFL.txt'), 'original license');
+    await publishFontAssets(source, output, faces, new Set(['files/latin.woff2']));
+    assert.deepEqual(await fs.readdir(path.join(output, 'files')), ['latin.woff2']);
+    assert.equal(await fs.readFile(path.join(output, 'OFL.txt'), 'utf8'), 'original license');
+    assert.doesNotMatch(await fs.readFile(path.join(output, 'font.css'), 'utf8'), /chinese.woff2/);
+    // A later rebuild can use a previously excluded source subset.
+    await publishFontAssets(source, output, faces, new Set(['files/chinese.woff2']));
+    assert.deepEqual(await fs.readdir(path.join(output, 'files')), ['chinese.woff2']);
+    assert.match(await fs.readFile(path.join(output, 'font.css'), 'utf8'), /chinese.woff2/);
+  } finally { await fs.rm(root, { recursive: true, force: true }); }
+});
