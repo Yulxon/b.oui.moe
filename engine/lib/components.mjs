@@ -20,7 +20,7 @@ export function siteHeader(site, current, href) {
   const order = ["/about/", "/taxonomy/", "/search/", "/"];
   const nav = [...site.nav].sort((a, b) => order.indexOf(a.href) - order.indexOf(b.href)).map(item => {
     const active = current === item.href ? ' aria-current="page"' : "";
-    return `<a href="${href(item.href)}"${active}>${escapeHtml(item.label)}</a>`;
+    return `<a href="${href(item.href)}"${item.href === '/about/' ? ' class="nav-about"' : ''}${active}>${escapeHtml(item.label)}</a>`;
   }).join("");
   return `<header class="site-header">
     <a class="brand" href="${href("/")}"><span class="brand-mark" aria-hidden="true"></span><strong>${escapeHtml(site.title)}</strong></a>
@@ -31,7 +31,7 @@ export function siteHeader(site, current, href) {
 
 export function articleTools(headings = []) {
   const links = headings.map(({ id, level, title }) => `<a href="#${encodeURIComponent(id)}" data-level="${level}">${escapeHtml(title)}</a>`).join('');
-  return `<aside class="toc-rail"${headings.length ? '' : ' hidden'}><details class="article-toc" open><summary>文章目录</summary><nav aria-label="文章目录">${links}</nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></details></aside>`;
+  return `<aside class="toc-rail"${headings.length ? '' : ' hidden'}><details class="article-toc" open><summary aria-label="文章目录"><span class="toc-title">On this page</span><span class="toc-toggle" aria-hidden="true">≡ toc</span></summary><div class="toc-panel"><div class="toc-panel-title" aria-hidden="true">On this page</div><nav aria-label="文章目录">${links}</nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></div></details></aside>`;
 }
 
 export function backToTop() {

@@ -14,6 +14,12 @@ public/  GitHub Pages 发布的 HTML、CSS、JavaScript 和字体
 
 直接编辑 `data/articles/*.md` 即可更新文章；`data/about.md` 是关于页面，`data/site.json` 是站点配置。没有第二份文章 JSON 正文。
 
+## 协作与迁移背景
+
+项目从 SolidStart 迁移为静态 Markdown 构建时，将七篇旧文章迁入 `data/articles/`，保留原有发布时间和公开/草稿状态，移除了旧的 AI 生成文章 JSON。
+
+Data 可以直接编辑，不要求追加式更新。AI 是可选的协作者，不是发布流水线的必要步骤；协作和编辑原则集中在 [AGENTS.md](AGENTS.md)，内容格式说明见 [data/README.md](data/README.md)。
+
 ## 本地开发
 
 需要 Node.js 22 或更高版本，CI 使用 Node.js 24；NixOS 可直接 `nix develop` / `direnv allow`。

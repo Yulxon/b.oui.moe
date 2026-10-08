@@ -45,6 +45,27 @@ export function initArticle(layout) {
   const toc = layout.querySelector('.article-toc');
   const nav = toc.querySelector('nav');
   const reading = toc.querySelector('output');
+  const mobileToc = window.matchMedia('(max-width: 900px)');
+  const toggleLabel = toc.querySelector('.toc-toggle');
+  function syncToc() { toc.open = !mobileToc.matches; }
+  syncToc();
+  mobileToc.addEventListener('change', syncToc);
+  toc.addEventListener('toggle', () => { toggleLabel.textContent = toc.open ? '× toc' : '≡ toc'; });
+  toc.querySelector('summary').addEventListener('click', event => {
+    if (!mobileToc.matches) event.preventDefault();
+  });
+  nav.addEventListener('click', event => {
+    if (mobileToc.matches && event.target.closest('a')) toc.open = false;
+  });
+  document.addEventListener('click', event => {
+    if (mobileToc.matches && !toc.contains(event.target)) toc.open = false;
+  });
+  toc.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mobileToc.matches) {
+      toc.open = false;
+      toc.querySelector('summary').focus();
+    }
+  });
   toc.parentElement.hidden = headings.length === 0;
   nav.replaceChildren();
   const ids = new Set([...document.querySelectorAll('[id]')].filter(el => !headings.includes(el)).map(el => el.id));
@@ -74,8 +95,8 @@ export function initArticle(layout) {
     progress.style.width = `${ratio * 100}%`;
     reading.textContent = `${Math.round(ratio * 100)}% · ~${Math.ceil(minutes * (1 - ratio))} min left`;
     backTop.hidden = window.scrollY <= 350 || root.clientWidth <= 930;
-    let current = headings[0];
-    for (const heading of headings) if (heading.getBoundingClientRect().top < 120) current = heading;
+    let current;
+    for (const heading of headings) if (heading.getBoundingClientRect().top < 300) current = heading;
     for (const [index, link] of links.entries()) {
       if (headings[index] === current) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');

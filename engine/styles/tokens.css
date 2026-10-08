@@ -9,7 +9,8 @@
   --article-width-tablet: 75%;
   --taxonomy-width: 1080px;
   --search-width: 760px;
-  --toc-width: min(180px, calc(25% - 48px));
+  --toc-width: 158px;
+  --about-width: 920px;
 
   /* Typography */
   --body-size: 16px;

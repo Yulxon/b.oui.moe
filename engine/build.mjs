@@ -77,7 +77,7 @@ export async function build({ quiet = false } = {}) {
   await fs.mkdir(cacheDir, { recursive: true });
   await buildStyles();
 
-  for (const asset of ["site.js", "components.js", "search.js", "taxonomy.js"]) {
+  for (const asset of ["site.js", "components.js", "search.js", "taxonomy.js", "icon.svg"]) {
     await fs.copyFile(path.join(here, "assets", asset), path.join(publicDir, "assets", asset));
   }
   await fs.cp(path.join(here, "assets", "fonts"), path.join(publicDir, "assets", "fonts"), { recursive: true });

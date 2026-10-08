@@ -12,7 +12,7 @@ function inline(source) {
 
   text = text.replace(/`([^`]+)`/g, (_, code) => keep(`<code>${code}</code>`));
   text = text.replace(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)/g, (_, alt, url, title) => {
-    const safeUrl = escapeHtml(url);
+    const safeUrl = url;
     const t = title ? ` title="${escapeHtml(title)}"` : "";
     return keep(`<img src="${safeUrl}" alt="${alt}" loading="lazy"${t}>`);
   });
@@ -26,7 +26,8 @@ function inline(source) {
   text = text.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, "<em>$1</em>");
   text = text.replace(/~~([^~]+)~~/g, "<del>$1</del>");
 
-  text = text.replace(/\u0000(\d+)\u0000/g, (_, index) => stash[Number(index)]);
+  const restore = value => value.replace(/\u0000(\d+)\u0000/g, (_, index) => restore(stash[Number(index)]));
+  text = restore(text);
   return text;
 }
 

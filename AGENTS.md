@@ -10,6 +10,8 @@ This repository is maintained by humans and coding agents together.
 
 Humans and AI may edit Data as requested. Preserve the author's meaning and voice; do not invent facts or conclusions. Only `draft: false` publishes an article; preserve publication state unless explicitly asked to change it.
 
+AI is an optional collaborator, not a required publishing step. Git preserves editing history; Data is editable rather than append-only. When editing prose, preserve the author's rhythm, familiar wording, uncertainty and jokes. Paragraphs, headings, punctuation and code fences may be adjusted for readability, but do not add experiences, quotations or emotional conclusions. The user's new instructions take precedence.
+
 ## Engine boundaries
 
 Keep these responsibilities separate:
@@ -47,6 +49,8 @@ Keep colors in `palette.css` and layout values out of it. There is currently one
 ## Implementation
 
 Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; fonts are self-hosted assets with their license.
+
+Do not redistribute fonts from the reference site when their license is unclear.
 
 Never hand-maintain `public/` as a second source of truth. Port temporary debugging changes into Engine or Data and rebuild.
 
