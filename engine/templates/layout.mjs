@@ -10,7 +10,6 @@ export function renderPage(
   },
 ) {
   const header = ctx.siteHeader(ctx.site, current, ctx.href);
-  const fonts = ctx.fontResources(`${header}${content}<span>Ი𐑼</span>`, current);
   return `<!doctype html>
 <html lang="${ctx.escapeHtml(ctx.site.language || "zh-CN")}" data-base="${ctx.escapeHtml(ctx.base)}">
 <head>
@@ -20,8 +19,6 @@ export function renderPage(
   <meta name="description" content="${ctx.escapeHtml(description)}">
   <title>${ctx.escapeHtml(title)}${title === ctx.site.title ? "" : ` · ${ctx.escapeHtml(ctx.site.title)}`}</title>
   <link rel="icon" type="image/svg+xml" sizes="any" href="${ctx.href("/assets/icon.svg")}">
-  ${fonts.preloads.map(src => `<link rel="preload" href="${src}" as="font" type="font/woff2" crossorigin>`).join('\n')}
-  <style data-page-fonts>${fonts.css}</style>
   <link rel="stylesheet" href="${ctx.href("/assets/site.css")}">
   ${styles.map((src) => `<link rel="stylesheet" href="${ctx.href(src)}">`).join("\n")}
   <link rel="stylesheet" href="${ctx.href("/assets/custom.css")}">
