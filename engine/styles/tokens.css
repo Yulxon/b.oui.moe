@@ -20,7 +20,9 @@
   --article-title-mobile-size: 24px;
   --prose-size: 17px;
   --prose-mobile-size: 16px;
-  --font: "LXGW WenKai", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-literary: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  --font-kai: "Kaiti SC", "STKaiti", "KaiTi", "DFKai-SB", var(--font-literary);
   --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   /* Spacing */
