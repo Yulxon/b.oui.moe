@@ -48,7 +48,7 @@ Keep colors in `palette.css` and layout values out of it. There is currently one
 
 ## Implementation
 
-Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; fonts are self-hosted assets with their license.
+Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; typography uses system font stacks without downloaded web fonts.
 
 Do not redistribute fonts from the reference site when their license is unclear.
 
@@ -73,4 +73,4 @@ Inspect the final diff for unrelated changes and unintended prose edits. Verify 
 
 Follow the quiet reading appearance of `blog.nyaw.xyz`: generous whitespace, chronological year/season groups, unobtrusive metadata, a restrained paper/green palette, and article-first pages.
 
-Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, self-hosted LXGW WenKai, and GitHub Pages deployment.
+Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, system font stacks, and GitHub Pages deployment.
