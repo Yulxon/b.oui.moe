@@ -350,7 +350,7 @@ a.post-meta:hover {
     color: var(--ink);
     background: var(--green-200);
 }
-.taxonomy-rail section + section {
+.taxonomy-rail section:not([hidden]) + section:not([hidden]) {
     margin-top: 30px;
 }
 .filter-list {
@@ -816,7 +816,7 @@ a.post-meta:hover {
     .taxonomy-tabs {
         margin: 16px auto;
     }
-    .taxonomy-rail section + section {
+    .taxonomy-rail section:not([hidden]) + section:not([hidden]) {
         margin-top: 12px;
     }
     .filter-list {

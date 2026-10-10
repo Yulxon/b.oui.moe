@@ -8,7 +8,7 @@ export function renderTaxonomy(ctx) {
     }
     return [...map].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
   };
-  const rail = (kind) => `<section data-rail="${kind}"><h2 class="eyebrow">${kind === "category" ? "CATEGORIES" : "TAGS"} · ${counts(kind).length}</h2><div class="filter-list">${counts(kind).map(([name, count]) => `<a class="filter-link" href="${ctx.taxonomyHref(kind, name)}" data-filter="${kind}" data-value="${ctx.escapeHtml(name)}"><span>${ctx.escapeHtml(name)}</span><span>${count}</span></a>`).join("")}</div></section>`;
+  const rail = (kind) => `<section data-rail="${kind}"${kind === "tag" ? " hidden" : ""}><h2 class="eyebrow">${kind === "category" ? "CATEGORIES" : "TAGS"} · ${counts(kind).length}</h2><div class="filter-list">${counts(kind).map(([name, count]) => `<a class="filter-link" href="${ctx.taxonomyHref(kind, name)}" data-filter="${kind}" data-value="${ctx.escapeHtml(name)}"><span>${ctx.escapeHtml(name)}</span><span>${count}</span></a>`).join("")}</div></section>`;
   const years = [...new Set(ctx.articles.map(post => post.date.slice(0, 4)))];
   const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
   const heatmap = `<div class="heatmap-scroll"><div class="heatmap"><span></span>${months.map(m => `<span class="month-label">${Number(m)}</span>`).join("")}${years.map(year => `<span class="heatmap-year">${year}</span>${months.map(month => {

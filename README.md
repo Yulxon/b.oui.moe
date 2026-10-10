@@ -117,6 +117,6 @@ npm run deploy
 
 部署前自动运行测试、数据检查、构建和产物检查。发布到 `https://b-oui-moe.20533.workers.dev` 和配置中绑定的 Custom Domain `b.oui.moe`。`public/CNAME` 仅供 GitHub Pages 使用，不会绑定 Workers 域名。
 
-GitHub Actions 的 `Deploy Cloudflare Workers` workflow 可手动触发，需要仓库 secrets `CLOUDFLARE_API_TOKEN`（目标账号的 Workers Scripts 编辑权限）和 `CLOUDFLARE_ACCOUNT_ID`。凭据不写入仓库。
+GitHub Actions 的 `Deploy Cloudflare Workers` workflow 在每次推送到 `main` 后自动部署，也可手动触发，需要仓库 secrets `CLOUDFLARE_API_TOKEN`（目标账号的 Workers Scripts 编辑权限）和 `CLOUDFLARE_ACCOUNT_ID`。凭据不写入仓库。
 
-`b.oui.moe` 已绑定到 Workers。GitHub Pages workflow 暂时保留作为备用发布；它不会更新 Workers。当前 Workers 自动部署尚未启用，更新线上站点需运行 `npm run deploy`，或配置上述 secrets 后手动触发 Workers workflow。
+`b.oui.moe` 已绑定到 Workers。GitHub Pages workflow 暂时保留作为备用发布；它不会更新 Workers。配置上述 secrets 后，推送到 `main` 会先完成测试、数据检查、构建和产物检查，再自动更新 Workers；检查失败则不会部署。其他分支不会更新正式站点。本地仍可使用 `npm run deploy` 手动部署。
