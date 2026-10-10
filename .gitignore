@@ -3,3 +3,4 @@ node_modules/
 engine/cache/*
 !engine/cache/.gitkeep
 .direnv/
+.wrangler/

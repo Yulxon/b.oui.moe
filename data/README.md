@@ -1,6 +1,6 @@
 # 可直接编辑的内容目录
 
-这里是网站内容的来源，不再是只追加的记录。作者和 AI 都可以随着项目更新修改 Markdown 和说明；历史由 Git 保存。无需 AI 生成一份最终文章 JSON。协作规则见根目录的 [AGENTS.md](../AGENTS.md)。
+这里是网站内容的来源。作者和 AI 都可以随着项目更新修改 Markdown 和说明；历史由 Git 保存。无需 AI 生成一份最终文章 JSON。协作规则见根目录的 [AGENTS.md](../AGENTS.md)。
 
 - `articles/*.md`：最终文章，构建时直接读取。
 - `about.md`：关于页面的正文。
@@ -11,7 +11,7 @@
 ```markdown
 ---
 title: 一篇文章
-date: '2026-10-08'
+date: "2026-10-08"
 draft: false
 categories: [随笔]
 tags: [生活]

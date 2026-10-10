@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadArticles } from "./lib/content.mjs";
-import { markdownToHtml, stripMarkdown } from "./lib/markdown.mjs";
+import { markdownToHtml, stripMarkdown, prepareMarkdown } from "./lib/markdown.mjs";
 import { escapeHtml, siteHeader, chronologicalContent, articleTools, backToTop } from "./lib/components.mjs";
 import { renderPage } from "./templates/layout.mjs";
 import { renderHome } from "./templates/home.mjs";
@@ -56,6 +56,7 @@ export async function build({ quiet = false } = {}) {
   const site = JSON.parse(await fs.readFile(path.join(dataDir, "site.json"), "utf8"));
   const aboutMarkdown = await fs.readFile(path.join(dataDir, "about.md"), "utf8");
   const articles = (await loadArticles(dataDir)).filter(post => post.status === "published");
+  await prepareMarkdown([aboutMarkdown, ...articles.map(post => post.bodyMarkdown)]);
   const taxonomyHref = (kind, value) => href(`/taxonomy/?view=${kind}&${kind}=${encodeURIComponent(value)}`);
   const ctx = {
     site,

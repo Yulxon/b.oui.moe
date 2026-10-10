@@ -94,6 +94,8 @@ engine/templates/
 
 ## 字体与依赖
 
+`yaml` 解析文章 frontmatter，`markdown-it` 解析正文（包括表格和嵌套列表），`Shiki` 在构建时生成代码高亮。高亮实例在一次构建中复用，只加载已发布内容使用的语言；未知语言退回纯文本，浏览器无需加载高亮库。表格和代码块支持横向滚动。搜索文本从 Markdown 解析结果提取，继续排除代码块和图片。
+
 网站字体采用系统字体栈，无需额外下载 Web Font：正文优先宋体/思源宋体，文章标题和关于页标题优先楷体，导航和界面使用系统无衬线字体。字体栈集中在 `engine/styles/tokens.css`，具体应用在 `typography.css` 和 `article.css`。不同操作系统安装字体不同，因此实际显示会有差异。
 
 网站继续使用单一纸色/绿色视觉体系；颜色集中在 `palette.css`，布局和颜色互不混杂。
@@ -102,4 +104,19 @@ engine/templates/
 
 `public/` 是构建结果，不要直接维护。如果在浏览器里临时改 CSS 找到了满意值，把修改放回 Engine 后重新构建。
 
-GitHub Pages workflow 会在 PR 中验证，在 `main` push 后构建并部署到 `b.oui.moe`。
+GitHub Pages workflow 会在 PR 中验证，在 `main` push 后构建并发布备用的 Pages 站点；正式域名 `b.oui.moe` 由下述 Workers 部署提供。
+
+## Cloudflare Workers 静态部署
+
+`wrangler.jsonc` 将 `public/` 部署为纯静态 Assets，不运行请求处理脚本。页面地址保持尾斜杠；不存在的地址返回 404，不回退到首页。
+
+```sh
+npx wrangler login
+npm run deploy
+```
+
+部署前自动运行测试、数据检查、构建和产物检查。发布到 `https://b-oui-moe.20533.workers.dev` 和配置中绑定的 Custom Domain `b.oui.moe`。`public/CNAME` 仅供 GitHub Pages 使用，不会绑定 Workers 域名。
+
+GitHub Actions 的 `Deploy Cloudflare Workers` workflow 可手动触发，需要仓库 secrets `CLOUDFLARE_API_TOKEN`（目标账号的 Workers Scripts 编辑权限）和 `CLOUDFLARE_ACCOUNT_ID`。凭据不写入仓库。
+
+`b.oui.moe` 已绑定到 Workers。GitHub Pages workflow 暂时保留作为备用发布；它不会更新 Workers。当前 Workers 自动部署尚未启用，更新线上站点需运行 `npm run deploy`，或配置上述 secrets 后手动触发 Workers workflow。

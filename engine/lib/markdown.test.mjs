@@ -32,3 +32,29 @@ test('articles without headings hide their empty contents rail', () => {
   markdownToHtml('没有标题的正文。', headings);
   assert.match(articleTools(headings), /class="toc-rail" hidden/);
 });
+
+test('tables, nested lists and literal HTML use mature Markdown parsing', () => {
+  const html = markdownToHtml('| 名称 | 数量 |\n| --- | ---: |\n| 示例 | 2 |\n\n- 外层\n  - 内层\n\n<script>alert(1)</script>');
+  assert.match(html, /class="table-scroll"/);
+  assert.match(html, /<thead>/);
+  assert.match(html, /<td style="text-align:right">2<\/td>/);
+  assert.match(html, /<ul>[\s\S]*<ul>/);
+  assert.doesNotMatch(html, /<script>/);
+  assert.doesNotMatch(markdownToHtml('[坏链接](javascript:alert(1))'), /href="javascript:/);
+});
+
+test('build-time highlighting supports aliases and unknown-language fallback', async () => {
+  const { prepareMarkdown } = await import('./markdown.mjs');
+  const source = '```js\nconst answer = 42;\n```\n\n```unknown-language\n<x>\n```';
+  await prepareMarkdown([source]);
+  const html = markdownToHtml(source);
+  assert.match(html, /class="shiki github-light"/);
+  assert.match(html, /<span style="color:/);
+  assert.match(html, /&lt;x&gt;/);
+  assert.doesNotMatch(html, /<pre[^>]*style=/);
+});
+
+test('search text follows parsed Markdown and excludes code blocks and images', async () => {
+  const { stripMarkdown } = await import('./markdown.mjs');
+  assert.equal(stripMarkdown('# **标题**\n\n[链接](https://example.com) 与 `变量` &amp;\n\n![图片](image.png)\n\n```js\nsecretCode\n```'), '标题 链接 与 变量 &');
+});

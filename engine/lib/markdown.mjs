@@ -1,149 +1,74 @@
-const escapeHtml = (value = "") => String(value)
-  .replaceAll("&", "&amp;")
-  .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll('"', "&quot;")
-  .replaceAll("'", "&#039;");
+import MarkdownIt from 'markdown-it';
+import { bundledLanguages, bundledLanguagesAlias, createHighlighter } from 'shiki';
 
-function inline(source) {
-  let text = escapeHtml(source);
-  const stash = [];
-  const keep = (html) => `\u0000${stash.push(html) - 1}\u0000`;
+// One highlighter per process; only load grammars used by the current content.
+const highlighter = await createHighlighter({ themes: ['github-light'], langs: [] });
+const languageFor = name => Object.hasOwn(bundledLanguages, name) ? name
+  : Object.hasOwn(bundledLanguagesAlias, name) ? name : null;
 
-  text = text.replace(/`([^`]+)`/g, (_, code) => keep(`<code>${code}</code>`));
-  text = text.replace(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)/g, (_, alt, url, title) => {
-    const safeUrl = url;
-    const t = title ? ` title="${escapeHtml(title)}"` : "";
-    return keep(`<img src="${safeUrl}" alt="${alt}" loading="lazy"${t}>`);
-  });
-  text = text.replace(/\[([^\]]+)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)/g, (_, label, url, title) => {
-    const t = title ? ` title="${escapeHtml(title)}"` : "";
-    const external = /^https?:\/\//.test(url) ? ' rel="noreferrer"' : "";
-    return keep(`<a href="${escapeHtml(url)}"${t}${external}>${label}</a>`);
-  });
-  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  text = text.replace(/__([^_]+)__/g, "<strong>$1</strong>");
-  text = text.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, "<em>$1</em>");
-  text = text.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-
-  const restore = value => value.replace(/\u0000(\d+)\u0000/g, (_, index) => restore(stash[Number(index)]));
-  text = restore(text);
-  return text;
+export async function prepareMarkdown(sources) {
+  const languages = new Set();
+  for (const source of sources) {
+    for (const token of markdown.parse(String(source), {})) {
+      if (token.type !== 'fence') continue;
+      const language = languageFor(token.info.trim().split(/\s+/)[0]);
+      if (language) languages.add(language);
+    }
+  }
+  await Promise.all([...languages].map(language => highlighter.loadLanguage(language)));
 }
 
-export function markdownToHtml(markdown = "", headings = []) {
-  const lines = String(markdown).replaceAll("\r\n", "\n").split("\n");
-  const out = [];
-  const ids = new Set(["top", "site-menu"]);
-  let paragraph = [];
-  let list = null;
-  let code = null;
-  let codeLang = "";
+const markdown = new MarkdownIt({
+  html: false,
+  typographer: false,
+  highlight(code, info) {
+    const language = languageFor(info);
+    if (!language || !highlighter.getLoadedLanguages().includes(language)) return '';
+    return highlighter.codeToHtml(code.replace(/\n$/, ''), {
+      lang: language,
+      theme: 'github-light',
+      // Page CSS controls the code block surface, not the highlighter theme.
+      transformers: [{ pre(node) { delete node.properties.style; } }],
+    });
+  },
+});
 
-  const flushParagraph = () => {
-    if (!paragraph.length) return;
-    out.push(`<p>${inline(paragraph.join(" "))}</p>`);
-    paragraph = [];
-  };
-  const closeList = () => {
-    if (!list) return;
-    out.push(`</${list}>`);
-    list = null;
-  };
+const imageRule = markdown.renderer.rules.image;
+markdown.renderer.rules.image = (tokens, index, options, env, renderer) => {
+  tokens[index].attrSet('loading', 'lazy');
+  return imageRule(tokens, index, options, env, renderer);
+};
+markdown.renderer.rules.table_open = () => '<div class="table-scroll" role="region" aria-label="表格" tabindex="0"><table>\n';
+markdown.renderer.rules.table_close = () => '</table></div>\n';
 
-  for (const raw of lines) {
-    const line = raw.replace(/\s+$/g, "");
-
-    if (code !== null) {
-      if (/^```/.test(line)) {
-        const className = codeLang ? ` class="language-${escapeHtml(codeLang)}"` : "";
-        out.push(`<pre><code${className}>${escapeHtml(code.join("\n"))}</code></pre>`);
-        code = null;
-        codeLang = "";
-      } else {
-        code.push(raw);
-      }
-      continue;
-    }
-
-    const fence = line.match(/^```\s*([\w-]+)?\s*$/);
-    if (fence) {
-      flushParagraph();
-      closeList();
-      code = [];
-      codeLang = fence[1] || "";
-      continue;
-    }
-
-    if (!line.trim()) {
-      flushParagraph();
-      closeList();
-      continue;
-    }
-
-    const heading = line.match(/^(#{1,6})\s+(.+)$/);
-    if (heading) {
-      flushParagraph();
-      closeList();
-      const level = heading[1].length;
-      const title = heading[2];
-      const stem = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "") || 'section';
-      let id = stem;
-      let suffix = 2;
-      while (ids.has(id)) id = `${stem}-${suffix++}`;
-      ids.add(id);
-      headings.push({ id, level, title: stripMarkdown(title) });
-      out.push(`<h${level} id="${escapeHtml(id)}">${inline(title)}</h${level}>`);
-      continue;
-    }
-
-    if (/^(---|\*\*\*|___)$/.test(line.trim())) {
-      flushParagraph();
-      closeList();
-      out.push("<hr>");
-      continue;
-    }
-
-    const quote = line.match(/^>\s?(.*)$/);
-    if (quote) {
-      flushParagraph();
-      closeList();
-      out.push(`<blockquote><p>${inline(quote[1])}</p></blockquote>`);
-      continue;
-    }
-
-    const ul = line.match(/^[-*+]\s+(.+)$/);
-    const ol = line.match(/^\d+[.)]\s+(.+)$/);
-    if (ul || ol) {
-      flushParagraph();
-      const next = ul ? "ul" : "ol";
-      if (list && list !== next) closeList();
-      if (!list) {
-        list = next;
-        out.push(`<${list}>`);
-      }
-      out.push(`<li>${inline((ul || ol)[1])}</li>`);
-      continue;
-    }
-
-    paragraph.push(line.trim());
-  }
-
-  if (code !== null) {
-    const className = codeLang ? ` class="language-${escapeHtml(codeLang)}"` : "";
-    out.push(`<pre><code${className}>${escapeHtml(code.join("\n"))}</code></pre>`);
-  }
-  flushParagraph();
-  closeList();
-  return out.join("\n");
+function inlineText(tokens = []) {
+  return tokens.map(token => {
+    if (token.type === 'image') return inlineText(token.children);
+    if (token.type === 'text' || token.type === 'code_inline') return token.content;
+    if (token.type === 'softbreak' || token.type === 'hardbreak') return ' ';
+    return '';
+  }).join('');
 }
 
-export function stripMarkdown(markdown = "") {
-  return String(markdown)
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/[#>*_~`-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+export function markdownToHtml(source = '', headings = []) {
+  const tokens = markdown.parse(String(source), {});
+  const ids = new Set(['top', 'site-menu']);
+  for (const [index, token] of tokens.entries()) {
+    if (token.type !== 'heading_open') continue;
+    const title = inlineText(tokens[index + 1]?.children);
+    const stem = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'section';
+    let id = stem;
+    let suffix = 2;
+    while (ids.has(id)) id = `${stem}-${suffix++}`;
+    ids.add(id);
+    token.attrSet('id', id);
+    headings.push({ id, level: Number(token.tag.slice(1)), title });
+  }
+  return markdown.renderer.render(tokens, markdown.options, {});
+}
+
+export function stripMarkdown(source = '') {
+  return markdown.parse(String(source), {}).filter(token => token.type === 'inline')
+    .map(token => inlineText(token.children.filter(child => child.type !== 'image')))
+    .join(' ').replace(/\s+/g, ' ').trim();
 }

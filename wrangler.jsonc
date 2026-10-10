@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "b-oui-moe",
+  "compatibility_date": "2026-10-10",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "b.oui.moe", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./public",
+    "html_handling": "force-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "build": {
+    "command": "npm run test && npm run check:data && npm run build && npm run check"
+  }
+}

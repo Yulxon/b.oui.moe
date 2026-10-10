@@ -2,7 +2,7 @@
 /* Article-only reading refinements. Global knobs remain in tokens.css/palette.css. */
 .article-layout .prose {
   --paragraph-gap: 21.25px;
-  font-family: var(--font);
+  font-family: var(--font-literary);
   font-size: 16px;
   line-height: 28px;
   color: var(--prose-ink);
@@ -31,7 +31,7 @@
 .article-layout .prose hr { border: 0; height: 2px; border-radius: var(--radius-lg); background: var(--accent-soft); margin: 3em 0; }
 .article-layout .prose img { width: 100%; margin: 2em 0; }
 .article-layout .prose :is(h2, h3, h4, hr) + * { margin-top: 0; }
-.article-header h1 { font-family: var(--font); color: #000; }
+.article-header h1 { font-family: var(--font-kai); color: #000; }
 @media (min-width: 1024px) { .article-layout .prose { --paragraph-gap: 22.6666px; font-size: 18px; line-height: 32px; } }
 @media (min-width: 1440px) { .article-layout .prose { --paragraph-gap: 20.4px; font-size: 20px; line-height: 36px; } }
 @media (min-width: 768px) and (max-width: 900px) { .article-layout .article-shell, .article-layout .toc-rail { width: var(--article-width); } }
