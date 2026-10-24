@@ -22,6 +22,7 @@ const types = {
 let timer = null;
 let building = false;
 let queued = false;
+let pendingKind = null;
 
 function notifyReload() {
   for (const response of clients) response.write("data: reload\n\n");
@@ -50,8 +51,13 @@ async function rebuild(kind) {
 }
 
 function schedule(kind) {
+  pendingKind = pendingKind === "full" || kind === "full" ? "full" : "styles";
   clearTimeout(timer);
-  timer = setTimeout(() => rebuild(kind), 90);
+  timer = setTimeout(() => {
+    const nextKind = pendingKind;
+    pendingKind = null;
+    rebuild(nextKind);
+  }, 90);
 }
 
 await build({ quiet: true });

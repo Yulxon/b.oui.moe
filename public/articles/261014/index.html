@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-CN" data-base="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="总结Linux桌面日常使用中容易遇到的问题，包含网络代理、中文输入法、字体、数据备份和软件管理">
+  <title>Linux日常使用调优 · Ი𐑼</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/icon.svg">
+  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/article.css">
+  <link rel="stylesheet" href="/assets/custom.css">
+</head>
+<body id="top" class="inner-page">
+  <div class="site-shell">
+    <header class="site-header">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><strong>Ი𐑼</strong></a>
+    <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span></button>
+    <div class="nav-wrap" id="site-menu"><nav class="site-nav" aria-label="主导航"><span class="nav-highlight" aria-hidden="true"></span><a href="/about/" class="nav-about">我?</a><a href="/taxonomy/">分类</a><a href="/search/">搜寻</a><a href="/">首页</a></nav></div>
+  </header>
+    <main><div class="reading-progress" aria-hidden="true"><span></span></div><div class="article-layout"><aside class="toc-rail"><details class="article-toc" open><summary aria-label="文章目录"><span class="toc-title">On this page</span><span class="toc-toggle" aria-hidden="true">≡ toc</span></summary><div class="toc-panel"><div class="toc-panel-title" aria-hidden="true">On this page</div><nav aria-label="文章目录"><a href="#%E7%BD%91%E7%BB%9C" data-level="2">网络</a><a href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F" data-level="3">环境变量</a><a href="#mihomo-%E9%85%8D%E7%BD%AE" data-level="3">mihomo 配置</a><a href="#%E4%B8%AD%E6%96%87%E7%8E%AF%E5%A2%83" data-level="2">中文环境</a><a href="#%E8%BE%93%E5%85%A5%E6%B3%95" data-level="3">输入法</a><a href="#cjk-%E5%AD%97%E4%BD%93" data-level="3">CJK 字体</a><a href="#flatpak-%E5%AD%97%E4%BD%93%E5%85%BC%E5%AE%B9" data-level="3">Flatpak 字体兼容</a><a href="#locale-%E8%AE%BE%E7%BD%AE" data-level="3">Locale 设置</a><a href="#%E8%BD%AF%E4%BB%B6%E7%AE%A1%E7%90%86" data-level="2">软件管理</a><a href="#%E8%BD%AF%E4%BB%B6%E6%9D%A5%E6%BA%90" data-level="3">软件来源</a><a href="#%E5%85%BC%E5%AE%B9%E6%80%A7" data-level="3">兼容性</a><a href="#%E6%9B%B4%E6%96%B0%E4%B8%8E%E5%9B%9E%E6%BB%9A" data-level="3">更新与回滚</a><a href="#%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD" data-level="2">数据备份</a><a href="#%E5%A4%87%E4%BB%BD%E8%8C%83%E5%9B%B4" data-level="3">备份范围</a><a href="#pika-backup" data-level="3">Pika Backup</a><a href="#nixos-%E9%85%8D%E7%BD%AE%E5%A4%87%E4%BB%BD" data-level="3">NixOS 配置备份</a><a href="#%E6%97%A5%E5%B8%B8%E7%BB%B4%E6%8A%A4" data-level="2">日常维护</a><a href="#%E6%97%A5%E5%BF%97%E4%B8%8E%E6%9C%8D%E5%8A%A1" data-level="3">日志与服务</a><a href="#%E7%BB%93%E8%AF%AD" data-level="2">结语</a></nav><div class="reading-status"><span>READING</span><output aria-label="阅读进度">0%</output></div></div></details></aside><div class="article-shell"><a class="article-back" href="/">← 返回</a><article><header class="article-header"><div class="article-meta"><a href="/taxonomy/?view=category&category=%E6%8A%80%E6%9C%AF">技术</a><span>·</span><time datetime="2026-10-14">2026.10.14</time></div><h1>Linux日常使用调优</h1></header><div class="prose"><p>Linux 发行版开箱即用的程度已经相当不错，但日常使用时仍会遇到一些细碎的问题。尤其是中文环境、网络代理和跨发行版软件兼容性，往往需要手动调整才能获得比较舒适的体验。</p>
+<p>本文记录我在 Linux 桌面环境下使用过的一些配置与解决方案。主要使用 NixOS + GNOME，部分内容具有发行版特异性，但思路基本通用。</p>
+<p>我的完整配置：<a href="https://github.com/Yulxon/nixos-config">nixos-config</a>。</p>
+<h2 id="网络">网络</h2>
+<p>由于众所周知的原因，部分网站需要通过代理访问。我们需要配置恰当的环境变量让软件走代理，以及合适的分流规则让国内流量走直连。</p>
+<h3 id="环境变量">环境变量</h3>
+<p>大部分命令行软件遵循以下环境变量：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#D73A49">export</span><span style="color:#24292E"> http_proxy</span><span style="color:#D73A49">=</span><span style="color:#24292E">http://127.0.0.1:7890</span></span>
+<span class="line"><span style="color:#D73A49">export</span><span style="color:#24292E"> https_proxy</span><span style="color:#D73A49">=</span><span style="color:#24292E">http://127.0.0.1:7890</span></span>
+<span class="line"><span style="color:#D73A49">export</span><span style="color:#24292E"> all_proxy</span><span style="color:#D73A49">=</span><span style="color:#24292E">http://127.0.0.1:7890</span></span>
+<span class="line"><span style="color:#D73A49">export</span><span style="color:#24292E"> no_proxy</span><span style="color:#D73A49">=</span><span style="color:#24292E">localhost,127.0.0.1,::1</span></span></code></pre>
+<p>这里假定 mihomo 监听 <code>7890</code> 端口，并启用了 HTTP 或 Mixed 代理端口。</p>
+<p>环境变量只对支持它的软件有效。浏览器、桌面软件以及 systemd 服务不一定继承终端中的环境变量。对于 GNOME，可以在系统设置中配置网络代理。</p>
+<p>在 NixOS 中使用声明式配置：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#E36209">networking</span><span style="color:#D73A49">.</span><span style="color:#E36209">proxy</span><span style="color:#D73A49">.</span><span style="color:#E36209">default</span><span style="color:#B31D28;font-style:italic"> =</span><span style="color:#032F62"> "http://127.0.0.1:7890"</span><span style="color:#B31D28;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E36209">networking</span><span style="color:#D73A49">.</span><span style="color:#E36209">proxy</span><span style="color:#D73A49">.</span><span style="color:#E36209">noProxy</span><span style="color:#B31D28;font-style:italic"> =</span><span style="color:#032F62"> "127.0.0.1,localhost,::1"</span><span style="color:#B31D28;font-style:italic">;</span></span></code></pre>
+<p>配置代理后，可以通过 <code>curl -I https://github.com</code> 检查连接。</p>
+<p>如果软件下载缓慢，也不一定需要代理。<a href="https://help.mirrors.cernet.edu.cn/">MirrorZ Help</a> 提供了大量软件包管理器及开发工具的国内镜像配置。</p>
+<h3 id="mihomo-配置">mihomo 配置</h3>
+<p>参考 <a href="https://wiki.metacubex.one/config/">mihomo docs</a>。</p>
+<p>一个基本可用的配置需要包含：</p>
+<ul>
+<li><code>proxies</code>：代理节点，也可以通过 <code>proxy-providers</code> 载入订阅。</li>
+<li><code>proxy-groups</code>：节点分组，支持手动选择或自动测速。</li>
+<li><code>rules</code>：根据域名、IP 地址等条件决定流量去向。</li>
+</ul>
+<p>可选补充 <code>dns</code> 和 <code>tun</code>，后者能够接管部分不遵循系统代理设置的流量，但需要额外配置路由和权限。</p>
+<p>例如：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#22863A">mixed-port</span><span style="color:#24292E">: </span><span style="color:#005CC5">7890</span></span>
+<span class="line"><span style="color:#22863A">mode</span><span style="color:#24292E">: </span><span style="color:#032F62">rule</span></span>
+<span class="line"><span style="color:#22863A">allow-lan</span><span style="color:#24292E">: </span><span style="color:#005CC5">false</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#22863A">proxy-groups</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#22863A">name</span><span style="color:#24292E">: </span><span style="color:#032F62">Proxy</span></span>
+<span class="line"><span style="color:#22863A">    type</span><span style="color:#24292E">: </span><span style="color:#032F62">select</span></span>
+<span class="line"><span style="color:#22863A">    proxies</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#24292E">      - </span><span style="color:#032F62">MyProxy</span></span>
+<span class="line"><span style="color:#24292E">      - </span><span style="color:#032F62">DIRECT</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#22863A">name</span><span style="color:#24292E">: </span><span style="color:#032F62">AI</span></span>
+<span class="line"><span style="color:#22863A">    type</span><span style="color:#24292E">: </span><span style="color:#032F62">select</span></span>
+<span class="line"><span style="color:#22863A">    proxies</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#24292E">      - </span><span style="color:#032F62">MyProxy</span></span>
+<span class="line"><span style="color:#24292E">      - </span><span style="color:#032F62">DIRECT</span></span></code></pre>
+<p>其中 <code>MyProxy</code> 需要替换为实际定义的节点名称。</p>
+<p>mihomo 首次启动可能无法下载 GEO 文件，可以尝试更换下载地址：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#22863A">geox-url</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#22863A">  geoip</span><span style="color:#24292E">: </span><span style="color:#032F62">https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat</span></span>
+<span class="line"><span style="color:#22863A">  geosite</span><span style="color:#24292E">: </span><span style="color:#032F62">https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat</span></span>
+<span class="line"><span style="color:#22863A">  mmdb</span><span style="color:#24292E">: </span><span style="color:#032F62">https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb</span></span></code></pre>
+<p>mihomo 的 <code>GEOSITE</code> 规则可以利用 <a href="https://github.com/v2fly/domain-list-community/tree/master/data">v2fly/domain-list-community</a> 提供的域名分类，其生成的数据也被相关 GEO 数据项目使用。</p>
+<p>例如，<code>category-game-platforms-download</code> 包含部分游戏平台的下载域名，将其设为直连可以改善 Steam 等平台的下载速度。</p>
+<p>下面是我使用的分流思路：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#22863A">rules</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">DOMAIN-SUFFIX,oui.moe,DIRECT</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOIP,lan,DIRECT,no-resolve</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOSITE,category-ads-all,REJECT</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOSITE,category-ai-!cn,AI</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOSITE,category-game-platforms-download,DIRECT</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOSITE,CN,DIRECT</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">GEOIP,CN,DIRECT</span></span>
+<span class="line"><span style="color:#24292E">  - </span><span style="color:#032F62">MATCH,Proxy</span></span></code></pre>
+<p>规则按照顺序匹配，命中后便停止继续匹配，因此需要将特殊规则放在通用规则之前。</p>
+<p>需要注意：</p>
+<ul>
+<li>广告拦截规则可能误伤网站资源。</li>
+<li>IP 分流依赖 DNS 解析结果，域名分流通常更适合网站访问。</li>
+<li>GEO 数据可能出现错误或滞后，必要时可以添加 <code>DOMAIN-SUFFIX</code> 规则进行覆盖。</li>
+<li>代理组 <code>AI</code>、<code>Proxy</code> 必须与实际配置中的名称一致。</li>
+</ul>
+<p>如果终端能够正常联网，但某些应用无法访问网络，应先检查其是否遵循系统代理，而不是一开始就启用 TUN。</p>
+<p>对于 NixOS，可以通过 <code>services.mihomo</code> 管理 systemd 服务。我将配置文件保留在 <code>~/.config/mihomo/config.yaml</code>，而不直接写入 Nix 配置，避免包含节点密钥的文件进入公开仓库或 Nix Store。</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6F42C1">sudo</span><span style="color:#032F62"> systemctl</span><span style="color:#032F62"> status</span><span style="color:#032F62"> mihomo</span></span>
+<span class="line"><span style="color:#6F42C1">sudo</span><span style="color:#032F62"> journalctl</span><span style="color:#005CC5"> -u</span><span style="color:#032F62"> mihomo</span><span style="color:#005CC5"> -b</span><span style="color:#005CC5"> -n</span><span style="color:#005CC5"> 100</span></span></code></pre>
+<p>这两条命令可以用于检查服务运行状态和启动日志。</p>
+<h2 id="中文环境">中文环境</h2>
+<p>Linux 软件对英文环境的支持普遍很好，但中文桌面环境仍存在输入法、字体回退以及异体字显示等问题。</p>
+<p>多数情况下功能能够正常使用，却远远谈不上完善，需要进行一些微调。</p>
+<h3 id="输入法">输入法</h3>
+<p>中文输入推荐使用 Rime 引擎：</p>
+<ul>
+<li>GNOME 环境可以使用 <code>ibus-rime</code>。</li>
+<li>KDE 等桌面环境可以使用 <code>fcitx5-rime</code>。</li>
+</ul>
+<p>输入方案可以按个人习惯选择，我比较偏好 <a href="https://github.com/iDvel/rime-ice">雾凇拼音</a>。</p>
+<p>为了改善长句输入与候选词排序，可以启用<a href="https://github.com/amzxyz/RIME-LMDG">万象语法模型</a>。</p>
+<p>在 Rime 方案的 <code>*.custom.yaml</code> 中添加相应配置，例如：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#22863A">patch</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#22863A">  grammar</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#22863A">    language</span><span style="color:#24292E">: </span><span style="color:#032F62">wanxiang-lts-zh-hans</span></span>
+<span class="line"><span style="color:#22863A">    collocation_max_length</span><span style="color:#24292E">: </span><span style="color:#005CC5">6</span></span>
+<span class="line"><span style="color:#22863A">    collocation_min_length</span><span style="color:#24292E">: </span><span style="color:#005CC5">3</span></span>
+<span class="line"><span style="color:#22863A">    collocation_penalty</span><span style="color:#24292E">: </span><span style="color:#005CC5">-14</span></span>
+<span class="line"><span style="color:#22863A">    non_collocation_penalty</span><span style="color:#24292E">: </span><span style="color:#005CC5">-6</span></span>
+<span class="line"><span style="color:#22863A">    weak_collocation_penalty</span><span style="color:#24292E">: </span><span style="color:#005CC5">-100</span></span>
+<span class="line"><span style="color:#22863A">    rear_penalty</span><span style="color:#24292E">: </span><span style="color:#005CC5">-20</span></span></code></pre>
+<p>将对应的 <code>wanxiang-lts-zh-hans.gram</code> 放入 Rime 用户数据目录，重新部署后生效。具体文件名及参数仍应参考模型版本与方案配置。</p>
+<p>词库方面，可以利用 <a href="https://github.com/felixonmars/fcitx5-pinyin-zhwiki">zhwiki</a> 和 <a href="https://github.com/outloudvi/mw2fcitx">moegirl</a> 补充专业词汇与流行文化词汇，也可以考虑启用雾凇拼音的 Unihan 大字表，改善生僻字输入。</p>
+<p>我的配置采用 NixOS 提供输入法引擎、方案和词库，再由 Home Manager 管理 Rime 用户配置的方式。这样可以减少手动更新词库的工作量，也便于在不同设备间复用配置。</p>
+<p>注意区分 Rime 的配置文件和运行时数据。<code>*.userdb</code> 中的用户词频与学习记录不适合被声明式配置覆盖，迁移系统时应单独保留。</p>
+<h3 id="cjk-字体">CJK 字体</h3>
+<p><a href="https://fonts.google.com/noto">Noto Fonts</a> 能够为多语言环境提供相对统一的视觉效果。推荐安装 Noto Sans CJK、Noto Serif CJK、Noto Color Emoji，并补充 Symbols Nerd Font 来显示图标。</p>
+<p>个人偏好的字体组合：</p>
+<ul>
+<li><strong>无衬线</strong>：Noto Sans / Noto Sans CJK SC</li>
+<li><strong>衬线</strong>：Noto Serif / LXGW WenKai</li>
+<li><strong>等宽及代码</strong>：Maple Mono / Iosevka</li>
+<li><strong>符号和 Emoji</strong>：Symbols Nerd Font / Noto Color Emoji</li>
+</ul>
+<p>不过，仅仅安装字体还不够。</p>
+<p>CJK 统一汉字编码包含中日韩共用的字符，但各地区的字形规范并不完全一致。fontconfig 的字体回退不合理时，就会出现简体中文环境下混入日文字形的情况。</p>
+<p>因此需要为不同语言配置相应的字体族。默认使用 CJK SC，同时根据语言标签选择对应变体：</p>
+<div class="table-scroll" role="region" aria-label="表格" tabindex="0"><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>字体变体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zh-CN、zh-SG</td>
+<td>CJK SC</td>
+</tr>
+<tr>
+<td>zh-TW</td>
+<td>CJK TC</td>
+</tr>
+<tr>
+<td>zh-HK</td>
+<td>CJK HK</td>
+</tr>
+<tr>
+<td>ja</td>
+<td>CJK JP</td>
+</tr>
+<tr>
+<td>ko</td>
+<td>CJK KR</td>
+</tr>
+</tbody>
+</table></div>
+<p>可以参考<a href="https://catcat.cc/post/2021-03-07/">这篇文章</a>了解 fontconfig 的匹配和替换机制。</p>
+<p><a href="https://catcat.cc/raw/fontconfig.html">用浏览器在线测试 CJK 字形</a>。</p>
+<p>对于 NixOS，还可以通过 Home Manager 的 <code>fonts.fontconfig.defaultFonts</code> 配置默认字体族，而不必逐个修改应用程序。</p>
+<h3 id="flatpak-字体兼容">Flatpak 字体兼容</h3>
+<p>Flatpak 应用运行在沙箱环境中，可能无法正确读取宿主机的 fontconfig 用户配置。</p>
+<p>可以授予只读权限：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6F42C1">flatpak</span><span style="color:#032F62"> override</span><span style="color:#005CC5"> --user</span><span style="color:#005CC5"> \</span></span>
+<span class="line"><span style="color:#005CC5">  --filesystem=xdg-config/fontconfig:ro</span></span></code></pre>
+<p>此外，NixOS 的字体存放在 Nix Store 中，部分 Flatpak 应用可能无法正确发现这些字体。</p>
+<p>优先通过 <code>fonts.packages</code> 在系统级安装字体。若仍然缺失，可以检查 <code>/run/host/fonts</code>，再考虑额外的 fontconfig 字体目录配置。</p>
+<p>我在自己的配置中还针对 Flatpak Chrome 设置了独立的字体扫描路径，具体参考 <a href="https://github.com/Yulxon/nixos-config/blob/main/home/gui/fontconfig.nix">fontconfig.nix</a>。</p>
+<p>不要为了修复一个字体问题就直接开放整个主目录的沙箱权限。</p>
+<h3 id="locale-设置">Locale 设置</h3>
+<p>不一定需要将整个系统切换为中文。我的习惯是保留英文界面，同时启用中文输入和字体支持。</p>
+<p>NixOS 可以同时启用多个 Locale：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#E36209">i18n</span><span style="color:#B31D28;font-style:italic"> =</span><span style="color:#24292E"> {</span></span>
+<span class="line"><span style="color:#6F42C1">  defaultLocale</span><span style="color:#D73A49"> =</span><span style="color:#032F62"> "en_US.UTF-8"</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#6F42C1">  extraLocales</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> [ </span><span style="color:#032F62">"zh_CN.UTF-8/UTF-8"</span><span style="color:#24292E"> ];</span></span>
+<span class="line"><span style="color:#6F42C1">  extraLocaleSettings</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> {</span></span>
+<span class="line"><span style="color:#6F42C1">    LC_MESSAGES</span><span style="color:#D73A49"> =</span><span style="color:#032F62"> "en_US.UTF-8"</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#6F42C1">    LC_TIME</span><span style="color:#D73A49"> =</span><span style="color:#032F62"> "en_GB.UTF-8"</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">  };</span></span>
+<span class="line"><span style="color:#24292E">}</span><span style="color:#B31D28;font-style:italic">;</span></span></code></pre>
+<p>这样既保留英文报错信息，也能够按个人习惯设置日期和时间格式。</p>
+<h2 id="软件管理">软件管理</h2>
+<p>无论使用何种发行版，最终常用的软件基本类似。比较麻烦的是软件来源可能不同，更新机制也不完全统一。</p>
+<h3 id="软件来源">软件来源</h3>
+<p>可以把软件分为三类：</p>
+<div class="table-scroll" role="region" aria-label="表格" tabindex="0"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>管理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>系统软件</td>
+<td>apt、dnf、pacman、nix 等</td>
+</tr>
+<tr>
+<td>桌面应用</td>
+<td>Flatpak</td>
+</tr>
+<tr>
+<td>项目依赖</td>
+<td>npm、pip、Cargo 等</td>
+</tr>
+</tbody>
+</table></div>
+<p>通常优先使用发行版的包管理器安装系统组件和命令行工具，桌面应用则可以考虑 Flatpak。</p>
+<p>对于开发依赖，尽量避免全局安装。</p>
+<p>Python 可以使用虚拟环境，Node.js 项目可以使用项目级依赖。使用 Nix 时还可以结合 <code>nix develop</code>、<code>direnv</code> 和 <code>nix-direnv</code>，实现进入项目目录时自动加载开发环境，离开后恢复原来的环境变量。</p>
+<p>这样可以减少不同项目之间的依赖冲突。</p>
+<h3 id="兼容性">兼容性</h3>
+<p>NixOS 的文件系统布局与传统 Linux 发行版存在区别，因此部分直接下载的二进制程序可能无法运行。</p>
+<p>可以启用 <code>nix-ld</code>，为依赖传统动态链接器路径的 ELF 程序提供兼容环境：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#E36209">programs</span><span style="color:#D73A49">.</span><span style="color:#E36209">nix-ld</span><span style="color:#D73A49">.</span><span style="color:#E36209">enable</span><span style="color:#B31D28;font-style:italic"> =</span><span style="color:#005CC5"> true</span><span style="color:#B31D28;font-style:italic">;</span></span></code></pre>
+<p>如果程序仍然缺少动态库，可以通过 <code>programs.nix-ld.libraries</code> 补充依赖。</p>
+<p>但 <code>nix-ld</code> 不能保证所有预编译 Linux 软件都正常工作。对于依赖复杂运行环境的工具，也可以考虑容器化。</p>
+<h3 id="更新与回滚">更新与回滚</h3>
+<p>对于滚动发行版，更新意味着持续接受新版本；对于固定发布周期的发行版，则主要是安全更新和定期升级。</p>
+<p>NixOS 的 Flakes 使用 <code>flake.lock</code> 固定依赖版本，能够更方便地控制更新范围。</p>
+<p>以我的配置为例：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6A737D"># 更新主要输入</span></span>
+<span class="line"><span style="color:#6F42C1">nix</span><span style="color:#032F62"> flake</span><span style="color:#032F62"> update</span><span style="color:#032F62"> nixpkgs</span><span style="color:#032F62"> home-manager</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 检查配置</span></span>
+<span class="line"><span style="color:#6F42C1">nix</span><span style="color:#032F62"> flake</span><span style="color:#032F62"> check</span><span style="color:#005CC5"> --no-build</span><span style="color:#032F62"> path:.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 应用系统配置</span></span>
+<span class="line"><span style="color:#6F42C1">sudo</span><span style="color:#032F62"> nixos-rebuild</span><span style="color:#032F62"> switch</span><span style="color:#005CC5"> --flake</span><span style="color:#032F62"> .#asus</span></span></code></pre>
+<p>其中 <code>asus</code> 是主机配置名称，实际使用时需要替换。</p>
+<p>更新其他独立输入需要分别指定，例如：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6F42C1">nix</span><span style="color:#032F62"> flake</span><span style="color:#032F62"> update</span><span style="color:#032F62"> llm-agents</span></span></code></pre>
+<p>不建议每次都无差别更新全部依赖。</p>
+<p>如果新配置出现问题，可以使用：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6F42C1">sudo</span><span style="color:#032F62"> nixos-rebuild</span><span style="color:#032F62"> switch</span><span style="color:#005CC5"> --rollback</span></span></code></pre>
+<p>或者从引导菜单选择之前的系统代。</p>
+<p>注意 <code>system.stateVersion</code> 和 <code>home.stateVersion</code> 是兼容性选项，并不是当前软件版本。日常更新 Nixpkgs 时不应顺手修改它们。</p>
+<p>Flatpak 则有独立的更新方式：</p>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6F42C1">flatpak</span><span style="color:#032F62"> update</span></span>
+<span class="line"><span style="color:#6F42C1">flatpak</span><span style="color:#032F62"> uninstall</span><span style="color:#005CC5"> --unused</span></span></code></pre>
+<p>第二条命令会移除当前不再被使用的运行时和扩展，执行前可以检查待删除内容。</p>
+<p>确认系统运行稳定之后，再清理不需要的 Nix generations 和 Store 数据，避免过早丢失可用的回滚版本。</p>
+<h2 id="数据备份">数据备份</h2>
+<p>Linux 的软件和配置比较容易重新部署，但个人数据和应用状态未必能够恢复。</p>
+<p>特别是对 NixOS 而言，<strong>声明式配置只能重建被声明的部分，不能替代数据备份。</strong></p>
+<h3 id="备份范围">备份范围</h3>
+<p>可以将数据分为三类：</p>
+<div class="table-scroll" role="region" aria-label="表格" tabindex="0"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>常见目录或文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>系统配置</td>
+<td><code>/etc</code>、NixOS 配置仓库</td>
+</tr>
+<tr>
+<td>用户数据</td>
+<td><code>/home</code> 下的文档、下载、项目等</td>
+</tr>
+<tr>
+<td>应用状态</td>
+<td>XDG 配置和数据目录、浏览器 Profile 等</td>
+</tr>
+</tbody>
+</table></div>
+<p>需要特别注意，<code>/root</code> 是 root 用户的主目录，并不代表整个系统。</p>
+<p>用户目录中的文件通常遵循 <a href="https://specifications.freedesktop.org/basedir-spec/latest/">XDG Base Directory</a> 规范：</p>
+<pre><code class="language-text">~/.config       软件配置
+~/.local/share  软件持久化数据
+~/.local/state  软件运行状态
+~/.cache        缓存
+~/.var/app      Flatpak 应用数据
+</code></pre>
+<p>但并非所有应用都会严格遵循 XDG 规范。例如 SSH 密钥可能位于 <code>~/.ssh</code>，Git 配置可能位于 <code>~/.gitconfig</code>，部分应用还会直接使用以点开头的隐藏目录。</p>
+<p>一般而言，配置、文档、数据库和用户生成的内容需要备份，能够重新下载或生成的缓存则可以排除。</p>
+<p>对于 Rime，应当保留用户词库与学习记录；对于浏览器，则需要考虑书签、配置和 Profile 中无法重新同步的数据。</p>
+<h3 id="pika-backup">Pika Backup</h3>
+<p>桌面环境推荐使用 <a href="https://apps.gnome.org/PikaBackup/">Pika Backup</a>。</p>
+<p>它基于 BorgBackup，支持增量备份、压缩、加密、备份计划和历史版本恢复。</p>
+<p>配置起来比较简单：选择备份源、指定备份仓库、设置排除目录，之后便可以定期自动执行。</p>
+<p>建议将主要用户目录纳入备份，排除不必要的构建产物和缓存，例如：</p>
+<pre><code class="language-text">~/.cache
+~/.local/share/Trash
+node_modules
+target
+__pycache__
+</code></pre>
+<p>实际排除规则要结合软件和项目情况调整，不能无差别排除所有隐藏目录。</p>
+<p>备份仓库最好位于另一块物理磁盘或远程服务器，而不是与原始数据保存在同一设备上。</p>
+<p>如果使用加密备份，务必妥善保存密码或恢复密钥。</p>
+<p>同时，备份的目的并不是成功生成一个归档文件，而是<strong>在系统损坏时能够完整恢复数据</strong>。因此最好定期尝试恢复少量文件，检查备份是否可用。</p>
+<h3 id="nixos-配置备份">NixOS 配置备份</h3>
+<p>声明式配置适合使用 Git 管理，配合 <code>flake.lock</code> 可以记录软件依赖版本。</p>
+<p>不过，Git 仓库一般只应该保存可公开或可安全同步的配置，不应该包含密码、Token、SSH 私钥和代理节点凭据。</p>
+<p>个人数据使用 Pika Backup，系统配置使用 Git，两者相互补充。</p>
+<p>对于使用 Btrfs 的系统，还可以通过快照实现快速回退，但快照不能替代异地备份：硬盘损坏时，同一块磁盘上的快照也可能全部丢失。</p>
+<h2 id="日常维护">日常维护</h2>
+<p>最后补充几个日常排查命令。</p>
+<h3 id="日志与服务">日志与服务</h3>
+<pre class="shiki github-light" tabindex="0"><code><span class="line"><span style="color:#6A737D"># 查看启动期间的错误</span></span>
+<span class="line"><span style="color:#6F42C1">journalctl</span><span style="color:#005CC5"> -b</span><span style="color:#005CC5"> -p</span><span style="color:#032F62"> err</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看指定服务</span></span>
+<span class="line"><span style="color:#6F42C1">systemctl</span><span style="color:#032F62"> status</span><span style="color:#032F62"> mihomo</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看用户服务</span></span>
+<span class="line"><span style="color:#6F42C1">systemctl</span><span style="color:#005CC5"> --user</span><span style="color:#005CC5"> --failed</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看磁盘空间</span></span>
+<span class="line"><span style="color:#6F42C1">df</span><span style="color:#005CC5"> -h</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看目录占用</span></span>
+<span class="line"><span style="color:#6F42C1">du</span><span style="color:#005CC5"> -sh</span><span style="color:#032F62"> ~/.cache</span><span style="color:#032F62"> ~/.local/share</span><span style="color:#032F62"> ~/.var/app</span><span style="color:#D73A49"> 2></span><span style="color:#032F62">/dev/null</span></span></code></pre>
+<p>出现异常时，先检查日志往往比直接重装软件更有效。</p>
+<p>还可以定期检查磁盘剩余空间、系统更新和备份状态。对于长期运行的桌面系统，这些基础维护通常比激进的内核参数调优更有价值。</p>
+<h2 id="结语">结语</h2>
+<p>Linux 桌面的使用体验往往取决于许多细节。网络代理、输入法、字体、软件依赖与备份机制都不算复杂，但初次配置时很容易消耗大量精力。</p>
+<p>对我而言，比较理想的状态是：大部分系统配置能够声明式管理，用户数据有独立备份，不同项目之间尽量隔离依赖，软件更新也有明确的回滚方案。</p>
+<p>把这些问题一次性整理好，以后就可以少折腾环境，把时间留给真正想做的事情。</p>
+</div><div class="article-tags"><a href="/taxonomy/?view=tag&tag=Linux">#Linux</a> <a href="/taxonomy/?view=tag&tag=%E6%97%A5%E5%B8%B8">#日常</a></div></article></div></div><a class="back-top" href="#top" aria-label="返回顶部" hidden><span aria-hidden="true">⌃</span></a></main>
+  </div>
+  <footer class="site-footer"><a class="footer-ending" href="/" aria-label="返回首页"><span aria-hidden="true">Ი𐑼</span></a></footer>
+  <script type="module" src="/assets/site.js"></script>
+
+</body>
+</html>

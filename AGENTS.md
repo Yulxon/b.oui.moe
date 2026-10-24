@@ -54,6 +54,21 @@ Do not redistribute fonts from the reference site when their license is unclear.
 
 Never hand-maintain `public/` as a second source of truth. Port temporary debugging changes into Engine or Data and rebuild.
 
+## Zed Flatpak terminal environment
+
+When Zed runs as `dev.zed.Zed` (Flatpak), agent terminal commands may run inside the Flatpak runtime rather than the host shell. A missing `npm`, `node`, or `nix` there does not mean it is missing on the host. Check `command -v npm` and `/.flatpak-info` before installing anything or changing dependencies.
+
+If the tool is missing inside Flatpak, use the existing host bridge with a login shell so host PATH initialization is applied. Set the terminal tool's working directory to this project; `flatpak-spawn` preserves that directory:
+
+```sh
+flatpak-spawn --host sh -lc 'node --version; npm --version'
+flatpak-spawn --host sh -lc 'npm run test && npm run check:data && npm run build && npm run check'
+```
+
+For the pinned development environment, use `flatpak-spawn --host sh -lc 'nix develop --command npm run test'` (and likewise for other scripts). Nix may need network access to prepare the environment.
+
+Host commands execute outside the Flatpak sandbox: keep them scoped to the requested task and respect tool approval requirements. Do not disable sandboxing globally, install another npm to work around PATH isolation, or hardcode Nix store paths. On native Zed, use the normal commands below without the Flatpak bridge.
+
 ## Validation
 
 After relevant changes run:

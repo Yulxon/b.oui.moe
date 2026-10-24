@@ -28,5 +28,3 @@ The visual surface is deliberately human-editable:
 The current palette remains paper `#fbfaf6`, ink `#2a2a28`, muted `#8b8b86`, rules `#ebe9e1`, and green accent `#6f9052`.
 
 Article contents links are rendered during the build, including all heading levels with unique anchors. JavaScript enhances active-section tracking and reading progress.
-
-The self-hosted LXGW WenKai assets and licenses remain under `engine/assets/fonts/lxgw-wenkai/` and require no runtime font CDN.

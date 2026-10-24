@@ -20,6 +20,9 @@
   --article-title-mobile-size: 24px;
   --prose-size: 17px;
   --prose-mobile-size: 16px;
+  --prose-code-size: 14px;
+  --prose-table-size: 15px;
+  --prose-list-size: 16px;
   --font: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --font-literary: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   --font-kai: "Kaiti SC", "STKaiti", "KaiTi", "DFKai-SB", var(--font-literary);

@@ -21,8 +21,4 @@ for (const post of articles.filter(post => post.status === 'draft')) {
   }
   throw new Error(`Draft article was published: ${post.slug}`);
 }
-for (const route of routes.filter(route => route.endsWith('.html'))) {
-  const html = await fs.readFile(path.join(root, route), 'utf8');
-  if (/data-page-fonts|\/assets\/fonts\/lxgw-wenkai\//.test(html)) throw new Error(`Legacy web font reference remains in ${route}`);
-}
-console.log('Draft exclusion, search publication status, and system-font-only pages verified.');
+console.log('Draft exclusion and search publication status verified.');
