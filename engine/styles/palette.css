@@ -1,31 +1,79 @@
-/* One palette, isolated from layout/typography so color tweaks stay local. */
+/* Wallpaper-inspired cream, dusty rose and lavender; colors only. */
 :root {
   color-scheme: light;
-  --paper: #fbfaf6;
-  --ink: #2a2a28;
-  --muted: #8b8b86;
-  --line: #ebe9e1;
-  --accent: #6f9052;
-  --accent-soft: #e4ecdb;
-  --surface: #fff;
-  --heatmap-0: #ebe9e1;
-  --heatmap-1: #c9deb2;
-  --heatmap-2: #90b66c;
-  --heatmap-3: #5e873e;
-  --heatmap-4: #2e5123;
-  --toc-shadow: #0000000f;
+  --paper: #f1e9e7;
+  --ink: #423c4d;
+  --muted: #726573;
+  --line: #ddd1d5;
+  --accent: #8b4f69;
+  --accent-soft: #e7dade;
+  --surface: #f8f1ec;
+  --heatmap-0: #e2d8dc;
+  --heatmap-1: #d4becb;
+  --heatmap-2: #b591a6;
+  --heatmap-3: #945e7a;
+  --heatmap-4: #61445f;
+  --toc-shadow: #423c4d14;
 
-  --green-300: #b5caa0;
-  --green-400: #8dab70;
-  --green-200: #ccdabc;
-  --summer: #f17c67;
-  --autumn: #b7b0d5;
-  --winter: #92cace;
+  --accent-200: #ddcbd4;
+  --accent-300: #bd9eae;
+  --accent-400: #a77d94;
+  --summer: #b69a79;
+  --autumn: #a98093;
+  --winter: #958ba8;
 
-  --prose-ink: #374151;
-  --prose-strong: #111827;
-  --prose-muted: #4a4a48;
-  --code-ink: #182013;
-  --code-block-ink: #393a34;
-  --code-block-bg: #faf9f5;
+  --prose-ink: #4a4351;
+  --prose-strong: #373140;
+  --prose-muted: #716373;
+  --code-ink: #70445f;
+  --code-block-ink: #4a4351;
+  --code-block-bg: #eae0e5;
+  --selection-bg: #79556f;
+  --selection-ink: #fffaf5;
+  --marker: #a08b9e;
+  --heading-shadow: #423c4d0d;
+  --accent-shadow: #ab748f40;
+  --back-top-bg: #ddcbd4e6;
+}
+
+/* Follow the system live, including when JavaScript is unavailable. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #24212b;
+    --ink: #e8dfe8;
+    --muted: #b5a4b6;
+    --line: #49404f;
+    --accent: #e0a5c0;
+    --accent-soft: #40303f;
+    --surface: #2e2835;
+    --heatmap-0: #39313f;
+    --heatmap-1: #61445f;
+    --heatmap-2: #945e7a;
+    --heatmap-3: #bc8fa6;
+    --heatmap-4: #e0b6cd;
+    --toc-shadow: #100d1859;
+
+    --accent-200: #574052;
+    --accent-300: #916a86;
+    --accent-400: #bf8ca9;
+    --summer: #d6af7d;
+    --autumn: #c98da8;
+    --winter: #afa0ce;
+
+    --prose-ink: #ddd3df;
+    --prose-strong: #f3e9ef;
+    --prose-muted: #beadbf;
+    --code-ink: #efbdd6;
+    --code-block-ink: #ddd3df;
+    --code-block-bg: #2b2532;
+    --selection-bg: #97627f;
+    --selection-ink: #fffaf5;
+    --marker: #a78ba7;
+    --heading-shadow: #100d1833;
+    --accent-shadow: #bf8ca92e;
+    --back-top-bg: #574052e6;
+  }
+
+  .shiki span { color: var(--shiki-dark, inherit) !important; }
 }

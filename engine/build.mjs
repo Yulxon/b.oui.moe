@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadArticles } from "./lib/content.mjs";
 import { markdownToHtml, stripMarkdown, prepareMarkdown } from "./lib/markdown.mjs";
 import { escapeHtml, siteHeader, chronologicalContent, articleTools, backToTop } from "./lib/components.mjs";
+import { articleDescription, renderRobots, renderSitemap } from "./lib/seo.mjs";
 import { renderPage } from "./templates/layout.mjs";
 import { renderHome } from "./templates/home.mjs";
 import { renderTaxonomy } from "./templates/taxonomy.mjs";
@@ -46,7 +47,7 @@ export async function buildStyles() {
   await Promise.all([
     fs.writeFile(path.join(publicDir, "assets", "site.css"), await concatStyles(siteStyleOrder), "utf8"),
     fs.writeFile(path.join(publicDir, "assets", "article.css"), await concatStyles(["article.css"]), "utf8"),
-    fs.copyFile(path.join(styleDir, "custom.css"), path.join(publicDir, "assets", "custom.css")),
+
   ]);
 }
 
@@ -90,10 +91,10 @@ export async function build({ quiet = false } = {}) {
 
   await writeRoute("/", renderPage(ctx, { title: site.title, current: "/", content: renderHome(ctx) }));
   await writeRoute("/taxonomy/", renderPage(ctx, { title: "分类", current: "/taxonomy/", content: renderTaxonomy(ctx), scripts: ["/assets/taxonomy.js"] }));
-  await writeRoute("/search/", renderPage(ctx, { title: "搜寻", current: "/search/", content: renderSearch(ctx), scripts: ["/assets/search.js"] }));
+  await writeRoute("/search/", renderPage(ctx, { title: "搜寻", current: "/search/", noindex: true, content: renderSearch(ctx), scripts: ["/assets/search.js"] }));
   await writeRoute("/about/", renderPage(ctx, { title: "关于我", current: "/about/", content: renderAbout(ctx) }));
   for (const post of articles) {
-    await writeRoute(`/articles/${post.slug}/`, renderPage(ctx, { title: post.title, description: post.summary, content: renderArticle(ctx, post), styles: ["/assets/article.css"] }));
+    await writeRoute(`/articles/${post.slug}/`, renderPage(ctx, { title: post.title, route: `/articles/${post.slug}/`, description: articleDescription(post), content: renderArticle(ctx, post), styles: ["/assets/article.css"] }));
   }
 
   const searchIndex = articles.map(post => ({
@@ -107,6 +108,8 @@ export async function build({ quiet = false } = {}) {
   }));
   await fs.writeFile(path.join(publicDir, "search-index.json"), JSON.stringify(searchIndex), "utf8");
   await fs.writeFile(path.join(publicDir, ".nojekyll"), "", "utf8");
+  await fs.writeFile(path.join(publicDir, "robots.txt"), renderRobots(site, href), "utf8");
+  if (site.customDomain) await fs.writeFile(path.join(publicDir, "sitemap.xml"), renderSitemap(site, href, articles), "utf8");
   if (site.customDomain) await fs.writeFile(path.join(publicDir, "CNAME"), `${site.customDomain}\n`, "utf8");
   await fs.writeFile(path.join(cacheDir, "content.json"), JSON.stringify({ builtAt: new Date().toISOString(), base, articles: searchIndex }, null, 2), "utf8");
 

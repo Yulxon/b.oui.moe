@@ -4,7 +4,7 @@
 
 然后试着寻找一些新奇的感受，通过文艺、实践和反思，以及认识更多的人。
 
-**Ი𐑼** 会收录一些值得反复阅读的文本，记录我认为有价值的地方。
+**Ი𐑼** 是我的小书架，收着值得反复阅读的文本，也记下我觉得它们有价值的地方。
 
 如果你恰好路过，欢迎进来坐坐。说不定，我们会在某个不起眼的问题里相遇呢。
 
@@ -17,4 +17,3 @@
 [![Bilibili](https://cdn.simpleicons.org/bilibili)](https://space.bilibili.com/526484854/favlist)
 [![Steam](https://cdn.simpleicons.org/steam)](https://steamcommunity.com/id/huayecc/)
 [![Pixiv](https://cdn.simpleicons.org/pixiv)](https://www.pixiv.net/users/64938927/bookmarks/artworks)
-[![Pinterest](https://cdn.simpleicons.org/pinterest)](https://jp.pinterest.com/ylx30130)

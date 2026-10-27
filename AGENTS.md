@@ -33,14 +33,9 @@ For visual changes, choose the smallest appropriate surface:
 3. page geometry/responsive layout → `engine/styles/layout.css`;
 4. text hierarchy → `engine/styles/typography.css`;
 5. UI component → `engine/styles/components.css`;
-6. article-reading detail → `engine/styles/article.css`;
-7. tiny author-specific override → `engine/styles/custom.css`.
+6. article-reading detail → `engine/styles/article.css`.
 
-### Protected author overrides
-
-`engine/styles/custom.css` is author-owned. Unless the author explicitly requests changes to that file, agents must not rewrite, delete, sort, merge, normalize, deduplicate, or move rules out of it. Do not remove a rule merely because it looks redundant or unused.
-
-Keep colors in `palette.css` and layout values out of it. There is currently one visual palette; do not reintroduce theme switching unless explicitly requested.
+Keep adjustments in the appropriate stylesheet rather than a separate override layer. Keep colors in `palette.css` and layout values out of it. Preserve the light and dark palettes and automatic system-preference switching.
 
 ## Authoring
 
@@ -50,24 +45,10 @@ Keep colors in `palette.css` and layout values out of it. There is currently one
 
 Prefer static generation and browser APIs. No server runtime, database, or frontend framework without a concrete requirement. New dependencies need a clear maintenance benefit. YAML uses the standard `yaml` parser; typography uses system font stacks without downloaded web fonts.
 
-Do not redistribute fonts from the reference site when their license is unclear.
+Do not redistribute third-party fonts when their license is unclear.
 
 Never hand-maintain `public/` as a second source of truth. Port temporary debugging changes into Engine or Data and rebuild.
 
-## Zed Flatpak terminal environment
-
-When Zed runs as `dev.zed.Zed` (Flatpak), agent terminal commands may run inside the Flatpak runtime rather than the host shell. A missing `npm`, `node`, or `nix` there does not mean it is missing on the host. Check `command -v npm` and `/.flatpak-info` before installing anything or changing dependencies.
-
-If the tool is missing inside Flatpak, use the existing host bridge with a login shell so host PATH initialization is applied. Set the terminal tool's working directory to this project; `flatpak-spawn` preserves that directory:
-
-```sh
-flatpak-spawn --host sh -lc 'node --version; npm --version'
-flatpak-spawn --host sh -lc 'npm run test && npm run check:data && npm run build && npm run check'
-```
-
-For the pinned development environment, use `flatpak-spawn --host sh -lc 'nix develop --command npm run test'` (and likewise for other scripts). Nix may need network access to prepare the environment.
-
-Host commands execute outside the Flatpak sandbox: keep them scoped to the requested task and respect tool approval requirements. Do not disable sandboxing globally, install another npm to work around PATH isolation, or hardcode Nix store paths. On native Zed, use the normal commands below without the Flatpak bridge.
 
 ## Validation
 
@@ -86,6 +67,6 @@ Inspect the final diff for unrelated changes and unintended prose edits. Verify 
 
 ## Design and features
 
-Follow the quiet reading appearance of `blog.nyaw.xyz`: generous whitespace, chronological year/season groups, unobtrusive metadata, a restrained paper/green palette, and article-first pages.
+Maintain an independent, quiet, article-first reading design with generous whitespace, chronological year/season groups and unobtrusive metadata. Use the author's wallpaper-inspired gray-cream, dusty rose and lavender palette, with coordinated light and dark modes that follow the system preference. Do not treat an external site's appearance as the design specification.
 
 Preserve home, taxonomy, local static search, about, article pages, article contents navigation, responsive navigation, back-to-top, system font stacks, and GitHub Pages deployment.

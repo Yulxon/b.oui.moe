@@ -10,7 +10,7 @@ body {
   display: flex;
   flex-direction: column;
 }
-::selection { background: #566253; color: white; }
+::selection { background: var(--selection-bg); color: var(--selection-ink); }
 a { color: inherit; text-underline-offset: .2em; text-decoration-color: var(--accent); }
 a:hover { color: var(--accent); }
 button, input { font: inherit; color: inherit; }

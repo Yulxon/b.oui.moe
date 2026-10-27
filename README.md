@@ -55,8 +55,7 @@ engine/styles/
 ├── layout.css       页面宽度、网格、header/footer、响应式
 ├── typography.css   标题、列表元信息、基础正文
 ├── components.css   导航、归档、搜索、TOC、按钮等组件
-├── article.css      仅文章阅读页的细节
-└── custom.css       作者手工覆盖层，永远最后加载
+└── article.css      仅文章阅读页的细节
 ```
 
 最常用的是 `tokens.css`。例如：
@@ -72,9 +71,9 @@ engine/styles/
 }
 ```
 
-觉得文章太宽，只改 `--article-width`；正文太密，只改字号/行高；不想研究规则来源的细小审美调整直接写进 `custom.css`。
+觉得文章太宽，只改 `--article-width`；正文太密，只改字号/行高；颜色调整统一放在 `palette.css`，并保持浅色、深色模式协调。
 
-`custom.css` 是作者所有的“视觉草稿纸”。`AGENTS.md` 明确要求 AI 默认不得整理、合并或删除它。
+细小审美调整也直接修改对应职责的样式文件，不再设置独立覆盖层。
 
 ## HTML 结构
 
@@ -105,6 +104,19 @@ engine/templates/
 `public/` 是构建结果，不要直接维护。如果在浏览器里临时改 CSS 找到了满意值，把修改放回 Engine 后重新构建。
 
 GitHub Pages workflow 会在 PR 中验证，在 `main` push 后构建并发布备用的 Pages 站点；正式域名 `b.oui.moe` 由下述 Workers 部署提供。
+
+## Google 搜索收录
+
+构建会按 `data/site.json` 的 `customDomain` 生成正式 HTTPS canonical URL、Open Graph 元信息、`robots.txt` 和 `sitemap.xml`。站点地图只包含首页、分类、关于页和已发布文章，不包含草稿、站内搜索页和分类筛选参数。站内搜索页使用 `noindex, follow`，但不阻止抓取，以便搜索引擎读取该指令。文章描述优先使用 frontmatter 的 `description`，为空时从正文提取最多 160 个字符；不会修改文章源文件。
+
+部署后，在 [Google Search Console](https://search.google.com/search-console/) 添加 `b.oui.moe` 的「网域」资源，按 Google 提供的值添加 DNS TXT 记录并完成所有权验证。验证记录是账号专属的，不应编造；采用 DNS 验证无需改网站代码。
+
+1. 确认 `https://b.oui.moe/robots.txt` 和 `https://b.oui.moe/sitemap.xml` 可以公开访问。
+2. 在 Search Console 的「站点地图」中提交 `https://b.oui.moe/sitemap.xml`。
+3. 使用「网址检查」检查首页和需要收录的文章，可按需请求编入索引。
+4. 若抓取失败，检查 Cloudflare 是否对 Googlebot 启用了登录限制、验证码或 WAF 拦截。
+
+这些设置帮助发现页面和识别正式地址，不保证 Google 一定收录或排名。备用 Pages/Workers 域名的 canonical 也指向正式域名；正式部署如使用根路径，应保持 `SITE_BASE` 为空。
 
 ## Cloudflare Workers 静态部署
 

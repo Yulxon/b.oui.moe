@@ -48,8 +48,9 @@ test('build-time highlighting supports aliases and unknown-language fallback', a
   const source = '```js\nconst answer = 42;\n```\n\n```unknown-language\n<x>\n```';
   await prepareMarkdown([source]);
   const html = markdownToHtml(source);
-  assert.match(html, /class="shiki github-light"/);
+  assert.match(html, /class="shiki shiki-themes github-light github-dark"/);
   assert.match(html, /<span style="color:/);
+  assert.match(html, /--shiki-dark:/);
   assert.match(html, /&lt;x&gt;/);
   assert.doesNotMatch(html, /<pre[^>]*style=/);
 });

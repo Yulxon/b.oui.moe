@@ -2,7 +2,7 @@ import MarkdownIt from 'markdown-it';
 import { bundledLanguages, bundledLanguagesAlias, createHighlighter } from 'shiki';
 
 // One highlighter per process; only load grammars used by the current content.
-const highlighter = await createHighlighter({ themes: ['github-light'], langs: [] });
+const highlighter = await createHighlighter({ themes: ['github-light', 'github-dark'], langs: [] });
 const languageFor = name => Object.hasOwn(bundledLanguages, name) ? name
   : Object.hasOwn(bundledLanguagesAlias, name) ? name : null;
 
@@ -26,7 +26,7 @@ const markdown = new MarkdownIt({
     if (!language || !highlighter.getLoadedLanguages().includes(language)) return '';
     return highlighter.codeToHtml(code.replace(/\n$/, ''), {
       lang: language,
-      theme: 'github-light',
+      themes: { light: 'github-light', dark: 'github-dark' },
       // Page CSS controls the code block surface, not the highlighter theme.
       transformers: [{ pre(node) { delete node.properties.style; } }],
     });
